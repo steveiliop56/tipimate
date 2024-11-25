@@ -1,10 +1,9 @@
-# TipiCord - The easiest way to check for app updates in your Runtipi instance 🔔
+# TipiCord - The easiest way to get notified about updates for your Runtipi apps!
 
-TipiCord is an extremely simple tool that periodically checks for app updates in your [Runtipi](https://github.com/runtipi/runtipi) instance and then sends notifications to your prefered Discord channel/server. It is super lightweight since and only ~20mb in size.
+TipiCord is an extremely simple tool that periodically checks for app updates in your [Runtipi](https://github.com/runtipi/runtipi) instance and then sends notifications to your prefered Discord channel/server. It is super lightweight, fast and only ~20mb in size.
 
-<div>
-    <img src="screenshots/carbon.png" width="auto" height="256" />
-</div>
+<img src="screenshots/carbon.png" width="auto" height="256" />
+<br />
 
 > [!WARNING]
 > TipiCord only supports runtipi instances from v3.7.0 and above since this version added the ability to use an API to communicate with the server.
