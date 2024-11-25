@@ -1,0 +1,9 @@
+# database
+tipicord.db
+
+# vscode debugger
+.vscode
+
+# Build out
+tipicord
+tipicord.exe
