@@ -7,6 +7,7 @@ import (
 	"time"
 	"tipicord/internal/alerts"
 	"tipicord/internal/api"
+	"tipicord/internal/assets"
 	"tipicord/internal/database"
 	"tipicord/internal/types"
 
@@ -35,6 +36,9 @@ var rootCmd = &cobra.Command{
 		// Start message
 		logger.Info().Msg("Starting")
 
+		// Print version
+		logger.Info().Msg(fmt.Sprintf("TipiCord %s", assets.Version))
+		
 		// Validate discord URL
 		logger.Info().Msg("Validating Discord webhook URL")
 		sr := router.ServiceRouter{}
