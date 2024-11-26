@@ -1,0 +1,65 @@
+name: Beta Release
+on:
+    workflow_dispatch:
+        inputs:
+            alpha:
+                description: 'Beta version (e.g. 1, 2, 3)'
+                required: true
+            
+jobs:
+    get-tag:
+        runs-on: ubuntu-latest
+        outputs:
+            tag: ${{ steps.tag.outputs.name }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            
+            - name: Get tag
+              id: tag
+              run: echo "name=$(cat internal/assets/version)-beta.${{ github.event.inputs.alpha }}" >> $GITHUB_OUTPUT
+
+    
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                arch: [amd64, arm64]
+                os: [linux]
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            
+            - uses: actions/setup-go@v5
+              with:
+                go-version: 1.23.2
+
+            - name: Build
+              run: go build -o tipicord-${{ matrix.os }}-${{ matrix.arch }}
+              env:
+                GOARCH: ${{ matrix.arch }}
+                GOOS: ${{ matrix.os }}
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: tipicord-${{ matrix.os }}-${{ matrix.arch }}
+                path: tipicord-${{ matrix.os }}-${{ matrix.arch }}
+
+    beta-release:
+        needs: [get-tag, build]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Download artifacts
+              uses: actions/download-artifact@v4
+              with:
+                pattern: tipicord-*
+                path: binaries
+                merge-multiple: true
+
+            - name: Create beta release
+              uses: softprops/action-gh-release@v2
+              with:
+                prerelease: true
+                tag_name: ${{ needs.get-tag.outputs.tag }}
+                files: binaries/*
