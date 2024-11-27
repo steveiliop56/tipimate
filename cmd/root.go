@@ -12,17 +12,14 @@ import (
 	"tipicord/internal/types"
 
 	"github.com/containrrr/shoutrrr/pkg/router"
+	"github.com/gookit/validate"
 	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-// Flags
-var discordUrl string
-var runtipiUrl string
-var jwtSecret string
-var appstore string
-var dbPath string
-var refresh int
+// Viper
+var cmdViper = viper.New()
 
 // Logger
 var logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}).With().Timestamp().Logger().Level(zerolog.DebugLevel)
@@ -32,9 +29,23 @@ var rootCmd = &cobra.Command{
 	Use:   "tipicord",
 	Short: "Discord notifications for your runtipi server",
 	Long: `TipiCord is a simple tool that monitors your runtipi server for app updates and notifies you via Discord notifications.`,
-	Run: func(cmd *cobra.Command, args []string) { 
+	Run: func(cmd *cobra.Command, args []string) {
 		// Start message
 		logger.Info().Msg("Starting")
+
+		// Get config
+		logger.Info().Msg("Getting config")
+		var config types.Config
+		viperParseErr := cmdViper.Unmarshal(&config)
+		handleError(viperParseErr, "Failed to parse config", true)
+
+		// Validate config
+		logger.Info().Msg("Validating config")
+		validtor := validate.Struct(config)
+		if !validtor.Validate() {
+			logger.Error().Str("err", validtor.Errors.One()).Msg("Invalid config")
+			os.Exit(1)
+		}
 
 		// Print version
 		logger.Info().Msg(fmt.Sprintf("TipiCord %s", assets.Version))
@@ -42,22 +53,22 @@ var rootCmd = &cobra.Command{
 		// Validate discord URL
 		logger.Info().Msg("Validating Discord webhook URL")
 		sr := router.ServiceRouter{}
-		_, discordValidateErr := sr.Locate(discordUrl)
+		_, discordValidateErr := sr.Locate(config.DiscordUrl)
 		handleError(discordValidateErr, "Invalid Discord webhook URL", true)
 
 		// Parse runtipi URL
 		logger.Info().Msg("Parsing Runtipi server URL")
-		_, runtipiParseErr := url.Parse(runtipiUrl)
+		_, runtipiParseErr := url.Parse(config.RuntipiUrl)
 		handleError(runtipiParseErr, "Invalid Runtipi server URL", true)
 
 		// Initialize db
 		logger.Info().Msg("Initializing database")
-		db, dbErr := database.InitDb(dbPath)
+		db, dbErr := database.InitDb(config.DbPath)
 		handleError(dbErr, "Failed to initialize database", true)
 
 		// Create JWT token
 		logger.Info().Msg("Creating JWT token")
-		jwtToken, jwtErr := api.CreateJWT(jwtSecret)
+		jwtToken, jwtErr := api.CreateJWT(config.JwtSecret)
 		handleError(jwtErr, "Failed to create JWT token", true)
 
 		// Main loop
@@ -66,7 +77,7 @@ var rootCmd = &cobra.Command{
 
 			// Get installed apps
 			logger.Info().Msg("Getting installed apps")
-			installedApps, installedAppsErr := api.GetInstalledApps(jwtToken, runtipiUrl)
+			installedApps, installedAppsErr := api.GetInstalledApps(jwtToken, config.RuntipiUrl)
 			handleError(installedAppsErr, "Failed to get installed apps", true)
 
 			// Purge uninstalled apps from db
@@ -130,15 +141,15 @@ var rootCmd = &cobra.Command{
 					Name: app.Name,
 					DockerVersion: app.DockerVersion,
 					Version: app.Version,
-					ServerUrl: runtipiUrl,
-					DiscordUrl: discordUrl,
-					AppStore: appstore,
+					ServerUrl: config.RuntipiUrl,
+					DiscordUrl: config.DiscordUrl,
+					AppStore: config.Appstore,
 				})
 				handleError(alertErr, "Failed to send app update alert", false)
 			}
 
 			// Sleep
-			time.Sleep(time.Duration(refresh) * time.Minute)
+			time.Sleep(time.Duration(config.Refresh) * time.Minute)
 		}
 	},
 }
@@ -161,15 +172,14 @@ func handleError(err error, msg string, exit bool) {
 }
 
 func init() {
-	rootCmd.Flags().StringVar(&discordUrl, "url", "", "Discord webhook URL")
-	rootCmd.Flags().StringVar(&runtipiUrl, "runtipi", "", "Runtipi server URL")
-	rootCmd.Flags().StringVar(&jwtSecret, "jwt", "", "JWT secret")
-	rootCmd.Flags().StringVar(&appstore, "appstore", "https://github.com/runtipi/runtipi-appstore", "Runtipi appstore URL (default https://github.com/runtipi/runtipi-appstore)")
-	rootCmd.Flags().StringVar(&dbPath, "db", "tipicord.db", "Database path (default tipicord.db)")
-	rootCmd.Flags().IntVarP(&refresh, "refresh", "r", 30, "Refresh interval in minutes (default 30)")
-	rootCmd.MarkFlagRequired("url")
-	rootCmd.MarkFlagRequired("runtipi")
-	rootCmd.MarkFlagRequired("jwt")
+	cmdViper.AutomaticEnv()
+	rootCmd.Flags().String("discord", "", "Discord webhook URL")
+	rootCmd.Flags().String("runtipi", "", "Runtipi server URL")
+	rootCmd.Flags().String("jwt", "", "JWT secret")
+	rootCmd.Flags().String("appstore", "https://github.com/runtipi/runtipi-appstore", "Runtipi appstore URL (default https://github.com/runtipi/runtipi-appstore)")
+	rootCmd.Flags().String("db", "tipicord.db", "Database path (default tipicord.db)")
+	rootCmd.Flags().IntP("refresh", "r", 30, "Refresh interval in minutes (default 30)")
+	cmdViper.BindPFlags(rootCmd.Flags())
 }
 
 

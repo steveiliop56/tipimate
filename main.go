@@ -1,6 +1,8 @@
 package main
 
-import "tipicord/cmd"
+import (
+	"tipicord/cmd"
+)
 
 func main() {
 	cmd.Execute()

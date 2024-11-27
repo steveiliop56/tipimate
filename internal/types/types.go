@@ -78,3 +78,13 @@ type App struct {
 type GetInstalledAppsResponse struct {
 	Installed []App `json:"installed"`
 }
+
+// Config
+type Config struct {
+	DiscordUrl string `validate:"required" message:"Discord webhook URL is required" mapstructure:"discord"`
+	RuntipiUrl string `validate:"required" message:"Runtipi URL is required" mapstructure:"runtipi"`
+	JwtSecret string `validate:"required" message:"JWT secret is required" mapstructure:"jwt"`
+	Appstore string `validate:"required" message:"Appstore URL is required" mapstructure:"appstore"`
+	DbPath string `validate:"required" message:"Database path is required" mapstructure:"db"`
+	Refresh int `validate:"required" message:"Refresh interval is required" mapstructure:"refresh"`
+}
