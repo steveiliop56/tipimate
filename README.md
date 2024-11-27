@@ -19,7 +19,15 @@ This project is still in early stages of development so it only includes the bas
 
 ## Getting started
 
-Right now there are no available binaries but I am working on releasing both a docker image and a binary, but for now you will have to [build](#building-️) it yourself using Go.
+You can run tipicord with two ways, docker or binary. If you chose binary, you can grab the latest binary from the [releases](https://github.com/steveiliop56/tipicord/releases) page, then `chmod +x tipicord` and finally you can run it with `./tipicord`. *assuming the binary is named tipicord*
+
+Running with docker is also very easy, you just need to download the docker compose file from [here](./docker-compose.yml) and run tipicord with `docker compose up -d`. *make sure to change the environment variables accordingly*
+
+If you prefer docker run command you can run it with
+
+```bash
+docker run -t -d --name tipicord -v ./data:/data -e DISCORD=your-discord-url -e RUNTIPI=your-runtipi-url -e JWT_SECRET=your-jwt-secret ghcr.io/steveiliop56/tipicord:latest
+```
 
 ## Building
 
@@ -54,6 +62,9 @@ If everything succeeds you should have a binary named `tipicord`.
 
 > [!NOTE]
 > You can also build for other operating systems/architectures using `GOOS=windows` and `GOARCH=arm64`.
+
+> [!NOTE]
+> You can also run a "development" docker compose file by copying the `.env.example` file to `.env`, changing your environment variables and running `docker compose -f docker-compose.dev.yml up --build --force-recreate`. With this way you can test your changes in the docker image too.
 
 ## Contributing
 

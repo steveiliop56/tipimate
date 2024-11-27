@@ -1,0 +1,14 @@
+services:
+  tipicord:
+    image: ghcr.io/steveiliop56/tipicord:latest
+    container_name: tipicord
+    restart: unless-stopped
+    volumes:
+      - ./data:/data
+    environment:
+      - DISCORD=your-discord-token
+      - RUNTIPI=runtipi-server-url
+      - JWT_SECRET=your-jwt-secret
+      - APPSTORE=https://github.com/runtipi/runtipi-appstore
+      - DATABASE_PATH=/data/tipicord.db
+      - REFRESH=30

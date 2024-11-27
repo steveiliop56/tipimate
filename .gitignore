@@ -7,3 +7,9 @@ tipicord.db
 # Build out
 tipicord
 tipicord.exe
+
+# Env
+.env
+
+# Data
+data

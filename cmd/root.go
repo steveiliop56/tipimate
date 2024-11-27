@@ -175,10 +175,12 @@ func init() {
 	cmdViper.AutomaticEnv()
 	rootCmd.Flags().String("discord", "", "Discord webhook URL")
 	rootCmd.Flags().String("runtipi", "", "Runtipi server URL")
-	rootCmd.Flags().String("jwt", "", "JWT secret")
+	rootCmd.Flags().String("jwtSecret", "", "JWT secret")
 	rootCmd.Flags().String("appstore", "https://github.com/runtipi/runtipi-appstore", "Runtipi appstore URL (default https://github.com/runtipi/runtipi-appstore)")
-	rootCmd.Flags().String("db", "tipicord.db", "Database path (default tipicord.db)")
+	rootCmd.Flags().String("databasePath", "tipicord.db", "Database path (default tipicord.db)")
 	rootCmd.Flags().IntP("refresh", "r", 30, "Refresh interval in minutes (default 30)")
+	cmdViper.BindEnv("jwtSecret", "JWT_SECRET")
+	cmdViper.BindEnv("databasePath", "DATABASE_PATH")
 	cmdViper.BindPFlags(rootCmd.Flags())
 }
 

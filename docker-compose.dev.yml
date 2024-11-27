@@ -1,0 +1,11 @@
+services:
+  tipicord:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tipicord
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/data
+    
