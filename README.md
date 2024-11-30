@@ -13,7 +13,7 @@ TipiCord is an extremely simple tool that periodically checks for app updates in
 This project is still in early stages of development so it only includes the basic features but I am planning to add the following ones too.
 
 - [ ] Multiple instances
-- [ ] Configuration using environment variables
+- [x] Configuration using environment variables (docker)
 - [ ] Support for other notifications services (project rename)
 - [ ] Possibly a CLI check mode like [Cup](https://github.com/sergi0g/cup)
 
