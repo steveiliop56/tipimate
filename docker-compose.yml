@@ -1,7 +1,7 @@
 services:
-  tipicord:
-    image: ghcr.io/steveiliop56/tipicord:latest
-    container_name: tipicord
+  tipimate:
+    image: ghcr.io/steveiliop56/tipimate:latest
+    container_name: tipimate
     restart: unless-stopped
     volumes:
       - ./data:/data
@@ -10,5 +10,5 @@ services:
       - RUNTIPI=runtipi-server-url
       - JWT_SECRET=your-jwt-secret
       - APPSTORE=https://github.com/runtipi/runtipi-appstore
-      - DB_PATH=/data/tipicord.db
+      - DB_PATH=/data/tipimate.db
       - REFRESH=30

@@ -7,14 +7,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Viper
-// var cmdViper = viper.New()
-
 // Main command
 var rootCmd = &cobra.Command{
-	Use:   "tipicord",
+	Use:   "tipimate",
 	Short: "Discord notifications for your runtipi server",
-	Long: "TipiCord is a simple tool that monitors your runtipi server for app updates and notifies you via Discord notifications",
+	Long: "TipiMate is a simple tool that monitors your runtipi server for app updates and notifies you via Discord notifications",
 }
 
 // Execute command

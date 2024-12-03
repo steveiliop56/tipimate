@@ -1,12 +1,12 @@
-# TipiCord
+# TipiMate
 
-TipiCord is an extremely simple tool that periodically checks for app updates in your [Runtipi](https://github.com/runtipi/runtipi) instance and then sends notifications to your prefered Discord channel/server. It is super fast, lightweight and only ~20mb in size.
+TipiMate is an extremely simple tool that periodically checks for app updates in your [Runtipi](https://github.com/runtipi/runtipi) instance and then sends notifications to your prefered Discord channel/server. It is super fast, lightweight and only ~20mb in size.
 
 > [!NOTE]
-> TipiCord only supports runtipi instances from v3.7.0 and above since this version added the ability to use an API to communicate with the server.
+> TipiMate only supports runtipi instances from v3.7.0 and above since this version added the ability to use an API to communicate with the server.
 
 > [!WARNING]
-> TipiCord is still in early stages of development so issues are to be expected. If you encounter any please create an issue so I can fix them as soon as possible.
+> TipiMate is still in early stages of development so issues are to be expected. If you encounter any please create an issue so I can fix them as soon as possible.
 
 ## Roadmap
 
@@ -19,14 +19,14 @@ This project is still in early stages of development so it only includes the bas
 
 ## Getting started
 
-You can run tipicord with two ways, docker or binary. If you chose binary, you can grab the latest binary from the [releases](https://github.com/steveiliop56/tipicord/releases) page, then `chmod +x tipicord` and finally you can run it with `./tipicord`. *assuming the binary is named tipicord*
+You can run tipimate with two ways, docker or binary. If you chose binary, you can grab the latest binary from the [releases](https://github.com/steveiliop56/tipimate/releases) page, then `chmod +x tipimate` and finally you can run it with `./tipimate`. *assuming the binary is named tipimate*
 
-Running with docker is also very easy, you just need to download the docker compose file from [here](./docker-compose.yml) and run tipicord with `docker compose up -d`. *make sure to change the environment variables accordingly*
+Running with docker is also very easy, you just need to download the docker compose file from [here](./docker-compose.yml) and run tipimate with `docker compose up -d`. *make sure to change the environment variables accordingly*
 
 If you prefer docker run command you can run it with
 
 ```bash
-docker run -t -d --name tipicord -v ./data:/data -e DISCORD=your-discord-url -e RUNTIPI=your-runtipi-url -e JWT_SECRET=your-jwt-secret ghcr.io/steveiliop56/tipicord:latest
+docker run -t -d --name tipimate -v ./data:/data -e DISCORD=your-discord-url -e RUNTIPI=your-runtipi-url -e JWT_SECRET=your-jwt-secret ghcr.io/steveiliop56/tipimate:latest
 ```
 
 ## Building
@@ -36,8 +36,8 @@ To build the project you need to have Go and Git installed.
 You firstly have to clone the repository with
 
 ```bash
-git clone https://github.com/steveiliop56/tipicord
-cd tipicord
+git clone https://github.com/steveiliop56/tipimate
+cd tipimate
 ```
 
 Then install dependencies
@@ -58,7 +58,7 @@ Or build it with
 got build
 ```
 
-If everything succeeds you should have a binary named `tipicord`.
+If everything succeeds you should have a binary named `tipimate`.
 
 > [!NOTE]
 > You can also build for other operating systems/architectures using `GOOS=windows` and `GOARCH=arm64`.
@@ -72,4 +72,4 @@ This project is still in early stages of development so bugs are to be expected.
 
 ## License
 
-TipiCord is licensed under the GNU General Public License v3.0. TL;DR — You may copy, distribute and modify the software as long as you track changes/dates in source files. Any modifications to or software including (via compiler) GPL-licensed code must also be made available under the GPL along with build & install instructions.
+TipiMate is licensed under the GNU General Public License v3.0. TL;DR — You may copy, distribute and modify the software as long as you track changes/dates in source files. Any modifications to or software including (via compiler) GPL-licensed code must also be made available under the GPL along with build & install instructions.

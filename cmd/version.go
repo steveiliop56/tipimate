@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"tipicord/internal/assets"
+	"tipimate/internal/assets"
 
 	"github.com/spf13/cobra"
 )
@@ -10,10 +10,10 @@ import (
 // Command
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print the version number of TipiCord",
-	Long: "All software has versions. This is TipiCord's",
+	Short: "Print the version number of TipiMate",
+	Long: "All software has versions. This is TipiMate's",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("TipiCord %s\n", assets.Version)
+		fmt.Printf("TipiMate %s\n", assets.Version)
 	},
 }
 

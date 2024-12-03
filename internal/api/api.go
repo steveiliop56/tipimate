@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"tipicord/internal/types"
+	"tipimate/internal/types"
 
 	"github.com/golang-jwt/jwt/v5"
 )

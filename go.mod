@@ -1,4 +1,4 @@
-module tipicord
+module tipimate
 
 go 1.23.2
 

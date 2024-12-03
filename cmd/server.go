@@ -6,12 +6,12 @@ import (
 	"os"
 	"strconv"
 	"time"
-	"tipicord/internal/alerts"
-	"tipicord/internal/api"
-	"tipicord/internal/assets"
-	"tipicord/internal/database"
-	"tipicord/internal/types"
-	"tipicord/internal/utils"
+	"tipimate/internal/alerts"
+	"tipimate/internal/api"
+	"tipimate/internal/assets"
+	"tipimate/internal/database"
+	"tipimate/internal/types"
+	"tipimate/internal/utils"
 
 	"github.com/containrrr/shoutrrr/pkg/router"
 	"github.com/gookit/validate"
@@ -169,7 +169,7 @@ func init() {
 	serverCmd.Flags().String("runtipi", "", "Runtipi server URL")
 	serverCmd.Flags().String("jwt-secret", "", "JWT secret")
 	serverCmd.Flags().String("appstore", "https://github.com/runtipi/runtipi-appstore", "Appstore URL for images")
-	serverCmd.Flags().String("db-path", "tipicord.db", "Database path")
+	serverCmd.Flags().String("db-path", "tipimate.db", "Database path")
 	serverCmd.Flags().Int("refresh", 30, "Refresh interval")
 	serverViper.BindEnv("jwt-secret", "JWT_SECRET")
 	serverViper.BindEnv("db-path", "DB_PATH")

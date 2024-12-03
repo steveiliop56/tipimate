@@ -11,17 +11,17 @@ COPY cmd/ cmd/
 
 RUN go mod tidy
 
-RUN go build -ldflags "-s -w" -o tipicord main.go
+RUN go build -ldflags "-s -w" -o tipimate main.go
 
 # --- RUNNER ----
 FROM alpine:3.20 AS runner
 
-WORKDIR /tipicord
+WORKDIR /tipimate
 
 RUN mkdir /data
 
-COPY --from=builder /build/tipicord /tipicord
+COPY --from=builder /build/tipimate /tipimate
 
-ENV DB_PATH=/data/tipicord.db
+ENV DB_PATH=/data/tipimate.db
 
-ENTRYPOINT ["/tipicord/tipicord", "server"]
+ENTRYPOINT ["/tipimate/tipimate", "server"]

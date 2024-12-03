@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"tipicord/internal/spinner"
+	"tipimate/internal/spinner"
 
 	"github.com/rs/zerolog/log"
 )

@@ -1,12 +1,12 @@
 # database
-tipicord.db
+tipimate.db
 
 # vscode debugger
 .vscode
 
 # Build out
-tipicord
-tipicord.exe
+tipimate
+tipimate.exe
 
 # Env
 .env

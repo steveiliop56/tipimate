@@ -34,7 +34,7 @@ jobs:
                 go-version: 1.23.2
 
             - name: Build
-              run: go build -o tipicord-${{ matrix.os }}-${{ matrix.arch }}
+              run: go build -o tipimate-${{ matrix.os }}-${{ matrix.arch }}
               env:
                 GOARCH: ${{ matrix.arch }}
                 GOOS: ${{ matrix.os }}
@@ -42,8 +42,8 @@ jobs:
             - name: Upload artifact
               uses: actions/upload-artifact@v4
               with:
-                name: tipicord-${{ matrix.os }}-${{ matrix.arch }}
-                path: tipicord-${{ matrix.os }}-${{ matrix.arch }}
+                name: tipimate-${{ matrix.os }}-${{ matrix.arch }}
+                path: tipimate-${{ matrix.os }}-${{ matrix.arch }}
 
     build-docker:
       needs: [get-tag, build]
@@ -71,7 +71,7 @@ jobs:
             context: .
             push: true
             platforms: linux/arm64, linux/amd64
-            tags: ghcr.io/${{ github.repository_owner }}/tipicord:${{ needs.get-tag.outputs.tag }}
+            tags: ghcr.io/${{ github.repository_owner }}/tipimate:${{ needs.get-tag.outputs.tag }}
 
     beta-release:
         needs: [get-tag, build, build-docker]
@@ -80,7 +80,7 @@ jobs:
             - name: Download artifacts
               uses: actions/download-artifact@v4
               with:
-                pattern: tipicord-*
+                pattern: tipimate-*
                 path: binaries
                 merge-multiple: true
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"tipicord/cmd"
+	"tipimate/cmd"
 )
 
 func main() {

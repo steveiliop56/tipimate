@@ -1,9 +1,9 @@
 services:
-  tipicord:
+  tipimate:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: tipicord
+    container_name: tipimate
     restart: unless-stopped
     env_file: .env
     volumes:

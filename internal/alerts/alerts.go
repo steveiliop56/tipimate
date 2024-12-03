@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
-	"tipicord/internal/constants"
-	"tipicord/internal/types"
-	"tipicord/internal/utils"
+	"tipimate/internal/constants"
+	"tipimate/internal/types"
+	"tipimate/internal/utils"
 
 	"github.com/containrrr/shoutrrr"
 	"github.com/google/go-querystring/query"
@@ -36,7 +36,7 @@ func SendAppUpdateAlert(info *types.AppUpdateAlert) (error) {
 		},
 	}
 	message.AvatarUrl = constants.RuntipiLogoUrl
-	message.Username = "TipiCord"
+	message.Username = "TipiMate"
 
 	// Query params
 	var webhook types.Webhook
