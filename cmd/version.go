@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Command
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number of TipiCord",
@@ -16,6 +17,7 @@ var versionCmd = &cobra.Command{
 	},
 }
 
+// Add command
 func init() {
 	rootCmd.AddCommand(versionCmd)
 }

@@ -80,11 +80,16 @@ type GetInstalledAppsResponse struct {
 }
 
 // Config
-type Config struct {
+type ServerConfig struct {
 	DiscordUrl string `validate:"required" message:"Discord webhook URL is required" mapstructure:"discord"`
 	RuntipiUrl string `validate:"required" message:"Runtipi URL is required" mapstructure:"runtipi"`
-	JwtSecret string `validate:"required" message:"JWT secret is required" mapstructure:"jwtSecret"`
+	JwtSecret string `validate:"required" message:"JWT secret is required" mapstructure:"jwt-secret"`
 	Appstore string `validate:"required" message:"Appstore URL is required" mapstructure:"appstore"`
-	DbPath string `validate:"required" message:"Database path is required" mapstructure:"databasePath"`
+	DbPath string `validate:"required" message:"Database path is required" mapstructure:"db-path"`
 	Refresh int `validate:"required" message:"Refresh interval is required" mapstructure:"refresh"`
+}
+
+type CheckConfig struct {
+	RuntipiUrl string `validate:"required" message:"Runtipi URL is required" mapstructure:"runtipi"`
+	JwtSecret string `validate:"required" message:"JWT secret is required" mapstructure:"jwt-secret"`
 }
