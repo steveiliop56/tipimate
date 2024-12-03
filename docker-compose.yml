@@ -10,5 +10,5 @@ services:
       - RUNTIPI=runtipi-server-url
       - JWT_SECRET=your-jwt-secret
       - APPSTORE=https://github.com/runtipi/runtipi-appstore
-      - DATABASE_PATH=/data/tipicord.db
+      - DB_PATH=/data/tipicord.db
       - REFRESH=30

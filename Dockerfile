@@ -22,6 +22,6 @@ RUN mkdir /data
 
 COPY --from=builder /build/tipicord /tipicord
 
-ENV DATABASE_PATH=/data/tipicord.db
+ENV DB_PATH=/data/tipicord.db
 
-ENTRYPOINT ["/tipicord/tipicord"]
+ENTRYPOINT ["/tipicord/tipicord", "server"]
