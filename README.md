@@ -14,7 +14,8 @@ This project is still in early stages of development so it only includes the bas
 
 - [ ] Multiple instances
 - [x] Configuration using environment variables (docker)
-- [ ] Support for other notifications services (project rename)
+- [ ] Support for other notifications service
+- [x] Project rename
 - [x] Possibly a CLI check mode like [Cup](https://github.com/sergi0g/cup)
 
 ## Getting started
