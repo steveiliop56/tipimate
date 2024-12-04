@@ -31,7 +31,7 @@ func SendDiscord(app *types.SimpleApp, discordUrl string, runtipiUrl string, app
 			},
 			TimeStamp: currentTime,
 			Thumbnail: types.EmbedThumbnail{
-				Url: utils.GetAppImageUrl(app.Name, appstore),
+				Url: utils.GetAppImageUrl(app.Id, appstore),
 			},
 		},
 	}
