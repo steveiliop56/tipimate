@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	cc "github.com/ivanpirog/coloredcobra"
 	"github.com/spf13/cobra"
 )
 
@@ -16,6 +17,14 @@ var rootCmd = &cobra.Command{
 
 // Execute command
 func Execute() {
+	cc.Init(&cc.Config{
+        RootCmd:       rootCmd,
+        Headings:      cc.Blue,
+        Example:       cc.Italic,
+		Commands: 	   cc.Green,
+        ExecName:      cc.White,
+        Flags:         cc.White,
+    })
 	err := rootCmd.Execute()
 	if err != nil {
 		fmt.Printf("An error occured while executing, error: %s\n", err.Error())
