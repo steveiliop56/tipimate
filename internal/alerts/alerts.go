@@ -12,17 +12,17 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
-func SendAppUpdateAlert(info *types.AppUpdateAlert) (error) {
+func SendDiscord(app *types.SimpleApp, discordUrl string, runtipiUrl string, appstore string) (error) {
 	// Vars
-	appUrl := fmt.Sprintf("%s/apps/%s", info.ServerUrl, info.Id)
-	description := fmt.Sprintf("Your app %s has an available update!\nUpdate to version `%s` (%d)", info.Name, info.DockerVersion, info.Version)
+	appUrl := fmt.Sprintf("%s/apps/%s", runtipiUrl, app.Id)
+	description := fmt.Sprintf("Your app %s has an available update!\nUpdate to version `%s` (%d)", app.Name, app.DockerVersion, app.Version)
 	currentTime := time.Now().Format(time.RFC3339)
 
 	// Message
 	var message types.Message
 	message.Embeds = []types.Embed{
 		{
-			Title: info.Name,
+			Title: app.Name,
 			Description: description,
 			Url: appUrl,
 			Color: "3126084",
@@ -31,7 +31,7 @@ func SendAppUpdateAlert(info *types.AppUpdateAlert) (error) {
 			},
 			TimeStamp: currentTime,
 			Thumbnail: types.EmbedThumbnail{
-				Url: utils.GetAppImageUrl(info.Id, info.AppStore),
+				Url: utils.GetAppImageUrl(app.Name, appstore),
 			},
 		},
 	}
@@ -48,7 +48,7 @@ func SendAppUpdateAlert(info *types.AppUpdateAlert) (error) {
 	}
 
 	// Final url
-	url := fmt.Sprintf("%s?%s", info.DiscordUrl, queries.Encode())
+	url := fmt.Sprintf("%s?%s", discordUrl, queries.Encode())
 
 	// Marshal message
 	messageJson, marshalErr := json.Marshal(message)

@@ -141,15 +141,7 @@ var serverCmd = &cobra.Command{
 				log.Logger.Info().Str("appId", appWithUpdate.Id).Str("tipiVersion", strconv.Itoa(appWithUpdate.Version)).Str("dockerVersion", appWithUpdate.DockerVersion).Msg("App has an update")
 
 				// Send alert
-				alertErr := alerts.SendAppUpdateAlert(&types.AppUpdateAlert{
-					Id: appWithUpdate.Id,
-					Name: appWithUpdate.Name,
-					Version: appWithUpdate.Version,
-					DockerVersion: appWithUpdate.DockerVersion,
-					ServerUrl: config.RuntipiUrl,
-					DiscordUrl: config.DiscordUrl,
-					AppStore: config.Appstore,
-				})
+				alertErr := alerts.SendDiscord(&appWithUpdate, config.DiscordUrl, config.RuntipiUrl, config.Appstore)
 
 				// Handle error
 				utils.HandleErrorLoggerNoExit(alertErr, "Failed to send app update alert")
