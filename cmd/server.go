@@ -38,6 +38,9 @@ var serverCmd = &cobra.Command{
 		var config types.ServerConfig
 		viperParseErr := serverViper.Unmarshal(&config)
 		utils.HandleErrorLogger(viperParseErr, "Failed to parse config")
+		if config.RuntipiInternalUrl == "" {
+			config.RuntipiInternalUrl = config.RuntipiUrl
+		}
 
 		// Validate config
 		validtor := validate.Struct(config)
@@ -68,7 +71,7 @@ var serverCmd = &cobra.Command{
 
 			// Get installed apps
 			log.Info().Msg("Getting installed apps")
-			installedApps, installedAppsErr := api.GetInstalledApps(token, config.RuntipiUrl)
+			installedApps, installedAppsErr := api.GetInstalledApps(token, config.RuntipiInternalUrl)
 			if installedAppsErr != nil {
 				utils.HandleErrorLoggerNoExit(installedAppsErr, "Failed to get installed apps")
 				continue
@@ -159,12 +162,14 @@ func init() {
 	serverViper.AutomaticEnv()
 	serverCmd.Flags().String("discord", "", "Discord webhook URL")
 	serverCmd.Flags().String("runtipi", "", "Runtipi server URL")
+	serverCmd.Flags().String("runtipi-internal", "", "Runtipi internal URL (used when running in the same server as runtipi)")
 	serverCmd.Flags().String("jwt-secret", "", "JWT secret")
 	serverCmd.Flags().String("appstore", "https://github.com/runtipi/runtipi-appstore", "Appstore URL for images")
 	serverCmd.Flags().String("db-path", "tipimate.db", "Database path")
 	serverCmd.Flags().Int("refresh", 30, "Refresh interval")
 	serverViper.BindEnv("jwt-secret", "JWT_SECRET")
 	serverViper.BindEnv("db-path", "DB_PATH")
+	serverViper.BindEnv("runtipi-internal", "RUNTIPI_INTERNAL")
 	serverViper.BindPFlags(serverCmd.Flags())
 	rootCmd.AddCommand(serverCmd)
 }

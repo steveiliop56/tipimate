@@ -82,6 +82,7 @@ type GetInstalledAppsResponse struct {
 // Config
 type ServerConfig struct {
 	DiscordUrl string `validate:"required" message:"Discord webhook URL is required" mapstructure:"discord"`
+	RuntipiInternalUrl string `validate:"required" message:"Runtipi internal URL is required" mapstructure:"runtipi-internal"`
 	RuntipiUrl string `validate:"required" message:"Runtipi URL is required" mapstructure:"runtipi"`
 	JwtSecret string `validate:"required" message:"JWT secret is required" mapstructure:"jwt-secret"`
 	Appstore string `validate:"required" message:"Appstore URL is required" mapstructure:"appstore"`

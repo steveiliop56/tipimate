@@ -30,6 +30,9 @@ If you prefer docker run command you can run it with
 docker run -t -d --name tipimate -v ./data:/data -e DISCORD=your-discord-url -e RUNTIPI=your-runtipi-url -e JWT_SECRET=your-jwt-secret ghcr.io/steveiliop56/tipimate:latest
 ```
 
+> [!TIP]
+> You can set the `--runtipi-internal` flag or the `RUNTIPI_INTERNAL` environment variable to something like `http://localhost` if TipiMate is running on the same server as your Runtipi server and then set the `--runtipi` flag or `RUNIPI` to the public URL of your instance e.g. `https://runtipi.mydomain.com` so TipiMate can both connect directly to Runtipi and show the correct URL on Discord. 
+
 ## Building
 
 To build the project you need to have Go and Git installed. 
@@ -56,7 +59,7 @@ go run .
 Or build it with
 
 ```bash
-got build
+go build
 ```
 
 If everything succeeds you should have a binary named `tipimate`.
