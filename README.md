@@ -17,6 +17,7 @@ This project is still in early stages of development so it only includes the bas
 - [ ] Support for other notifications service
 - [x] Project rename
 - [x] Possibly a CLI check mode like [Cup](https://github.com/sergi0g/cup)
+- [ ] Check for main Runtipi version
 
 ## Getting started
 
