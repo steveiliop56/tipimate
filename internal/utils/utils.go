@@ -6,6 +6,7 @@ import (
 	"strings"
 	"tipimate/internal/spinner"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
@@ -50,4 +51,37 @@ func HandleErrorLoggerNoExit(err error, msg string) {
 		// Log error
 		log.Error().Str("err", err.Error()).Msg(msg)
 	}
+}
+
+func HandleError(err error, msg string) {
+	// Check error
+	if err != nil {
+		// Print error
+		fmt.Printf("Error: %s\n", err)
+		// Exit
+		os.Exit(1)
+	}
+}
+
+func GetLogLevel(level string) (zerolog.Level) {
+	// Get level from string
+	switch level {
+		case "panic":
+			return zerolog.PanicLevel
+		case "fatal":
+			return zerolog.FatalLevel
+		case "error":
+			return zerolog.ErrorLevel
+		case "warn":
+			return zerolog.WarnLevel
+		case "info":
+			return zerolog.InfoLevel
+		case "debug":
+			return zerolog.DebugLevel
+		case "trace":
+			return zerolog.TraceLevel
+	}
+
+	// Fallback to info
+	return zerolog.InfoLevel
 }

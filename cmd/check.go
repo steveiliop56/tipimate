@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"tipimate/internal/api"
@@ -11,7 +10,7 @@ import (
 	"tipimate/internal/utils"
 
 	"github.com/fatih/color"
-	"github.com/gookit/validate"
+	"github.com/go-playground/validator/v10"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -37,10 +36,8 @@ var checkCmd = &cobra.Command{
 		utils.HandleErrorSpinner("Failed to parse config", viperParseErr)
 
 		// Validate config
-		validtor := validate.Struct(config)
-		if !validtor.Validate() {
-			utils.HandleErrorSpinner("Invalid config", errors.New(validtor.Errors.One()))
-		}
+		validateErr := validator.New().Struct(config)
+		utils.HandleErrorSpinner("Failed to validate config", validateErr)
 
 		// Parse runtipi URL
 		_, runtipiParseErr := url.Parse(config.RuntipiUrl)

@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"errors"
 	"net/url"
 	"os"
 	"strconv"
@@ -14,7 +13,7 @@ import (
 	"tipimate/internal/utils"
 
 	"github.com/containrrr/shoutrrr/pkg/router"
-	"github.com/gookit/validate"
+	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -30,23 +29,21 @@ var serverCmd = &cobra.Command{
 	Short: "Start the Tipicord server",
 	Long: "Use the server command to automatically check for updates on your Runtipi server and send them to your Discord server",
 	Run: func(cmd *cobra.Command, args []string) {
-		// Logger
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}).With().Timestamp().Logger().Level(zerolog.DebugLevel)
-		log.Info().Str("version", assets.Version).Msg("Starting Tipicord server")
-		
 		// Get config
 		var config types.ServerConfig
 		viperParseErr := serverViper.Unmarshal(&config)
-		utils.HandleErrorLogger(viperParseErr, "Failed to parse config")
+		utils.HandleError(viperParseErr, "Failed to parse config")
 		if config.RuntipiInternalUrl == "" {
 			config.RuntipiInternalUrl = config.RuntipiUrl
 		}
 
 		// Validate config
-		validtor := validate.Struct(config)
-		if !validtor.Validate() {
-			utils.HandleErrorLogger(errors.New(validtor.Errors.One()), "Invalid config")
-		}
+		validateErr := validator.New().Struct(config)
+		utils.HandleError(validateErr, "Failed to validate config")
+
+		// Logger
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}).With().Timestamp().Logger().Level(utils.GetLogLevel(config.LogLevel))
+		log.Info().Str("version", assets.Version).Msg("Starting Tipicord server")
 
 		// Validate URL
 		sr := router.ServiceRouter{}
@@ -167,10 +164,12 @@ func init() {
 	serverCmd.Flags().String("appstore", "https://github.com/runtipi/runtipi-appstore", "Appstore URL for images")
 	serverCmd.Flags().String("db-path", "tipimate.db", "Database path")
 	serverCmd.Flags().Int("refresh", 30, "Refresh interval")
+	serverCmd.Flags().String("log-level", "info", "Log level")
 	serverViper.BindEnv("notify-url", "NOTIFY_URL")
 	serverViper.BindEnv("jwt-secret", "JWT_SECRET")
 	serverViper.BindEnv("db-path", "DB_PATH")
 	serverViper.BindEnv("runtipi-internal", "RUNTIPI_INTERNAL")
+	serverViper.BindEnv("log-level", "LOG_LEVEL")
 	serverViper.BindPFlags(serverCmd.Flags())
 	rootCmd.AddCommand(serverCmd)
 }

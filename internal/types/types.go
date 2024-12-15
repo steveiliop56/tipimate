@@ -89,16 +89,17 @@ type GetInstalledAppsResponse struct {
 
 // Config
 type ServerConfig struct {
-	NotifyUrl string `validate:"required" message:"Notify URL is required" mapstructure:"notify-url"`
-	RuntipiInternalUrl string `validate:"required" message:"Runtipi internal URL is required" mapstructure:"runtipi-internal"`
-	RuntipiUrl string `validate:"required" message:"Runtipi URL is required" mapstructure:"runtipi"`
-	JwtSecret string `validate:"required" message:"JWT secret is required" mapstructure:"jwt-secret"`
-	Appstore string `validate:"required" message:"Appstore URL is required" mapstructure:"appstore"`
-	DbPath string `validate:"required" message:"Database path is required" mapstructure:"db-path"`
-	Refresh int `validate:"required" message:"Refresh interval is required" mapstructure:"refresh"`
+	NotifyUrl string `validate:"required" mapstructure:"notify-url"`
+	RuntipiInternalUrl string `validate:"required" mapstructure:"runtipi-internal"`
+	RuntipiUrl string `validate:"required" mapstructure:"runtipi"`
+	JwtSecret string `validate:"required" mapstructure:"jwt-secret"`
+	Appstore string `validate:"required" mapstructure:"appstore"`
+	DbPath string `validate:"required" mapstructure:"db-path"`
+	Refresh int `validate:"required" mapstructure:"refresh"`
+	LogLevel string `validate:"required,oneof=trace debug info warn error fatal panic" mapstructure:"log-level"`
 }
 
 type CheckConfig struct {
-	RuntipiUrl string `validate:"required" message:"Runtipi URL is required" mapstructure:"runtipi"`
-	JwtSecret string `validate:"required" message:"JWT secret is required" mapstructure:"jwt-secret"`
+	RuntipiUrl string `validate:"required" mapstructure:"runtipi"`
+	JwtSecret string `validate:"required" mapstructure:"jwt-secret"`
 }
