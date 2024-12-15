@@ -19,6 +19,30 @@ This project is still in early stages of development so it only includes the bas
 - [x] Possibly a CLI check mode like [Cup](https://github.com/sergi0g/cup)
 - [ ] Check for main Runtipi version
 
+## Notification services roadmap
+
+Tipimate v1.0.0 will come with all shoutrrr supported notification services, here are the ones implemented and the ones I will implement:
+
+- [ ] Bark
+- [x] Discord
+- [ ] Email
+- [x] Gotify
+- [ ] Google Chat
+- [ ] IFTTT
+- [ ] Join
+- [ ] Mattermost
+- [ ] Matrix
+- [ ] Ntfy
+- [ ] OpsGenie
+- [ ] Pushbullet
+- [ ] Pushover
+- [ ] Rocketchat
+- [ ] Slack
+- [ ] Teams
+- [ ] Telegram
+- [ ] Zulip Chat
+- [ ] Generic Webhook
+
 ## Getting started
 
 You can run tipimate with two ways, docker or binary. If you chose binary, you can grab the latest binary from the [releases](https://github.com/steveiliop56/tipimate/releases) page, then `chmod +x tipimate` and finally you can run it with `./tipimate`. *assuming the binary is named tipimate*
@@ -28,7 +52,7 @@ Running with docker is also very easy, you just need to download the docker comp
 If you prefer docker run command you can run it with
 
 ```bash
-docker run -t -d --name tipimate -v ./data:/data -e DISCORD=your-discord-url -e RUNTIPI=your-runtipi-url -e JWT_SECRET=your-jwt-secret ghcr.io/steveiliop56/tipimate:latest
+docker run -t -d --name tipimate -v ./data:/data -e NOTIFY_URL=your-discord-url -e RUNTIPI=your-runtipi-url -e JWT_SECRET=your-jwt-secret ghcr.io/steveiliop56/tipimate:latest
 ```
 
 > [!TIP]
