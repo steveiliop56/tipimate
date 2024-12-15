@@ -1,34 +1,42 @@
 package types
 
 // Discord webhook embed
-type EmbedFooter struct {
+type DiscordEmbedFooter struct {
 	Text string `json:"text"`
 }
 
-type EmbedThumbnail struct {
+type DiscordEmbedThumbnail struct {
 	Url string `json:"url"`
 }
 
-type Embed struct {
+type DiscordEmbed struct {
 	Title string `json:"title"`
 	Description	string `json:"description"`
 	Url	string `json:"url"`
 	Color string `json:"color"`
-	Footer EmbedFooter `json:"footer"`
+	Footer DiscordEmbedFooter `json:"footer"`
 	TimeStamp string `json:"timestamp"`
-	Thumbnail EmbedThumbnail `json:"thumbnail"`
+	Thumbnail DiscordEmbedThumbnail `json:"thumbnail"`
 }
 
 // Discord webhook message
-type Message struct {
-	Embeds []Embed `json:"embeds"`
+type DiscordMessage struct {
+	Embeds []DiscordEmbed `json:"embeds"`
 	AvatarUrl string `json:"avatar_url"`
 	Username string `json:"username"`
 }
 
 // Discord webhook struct
-type Webhook struct {
+type DiscordWebhook struct {
 	Json bool `url:"json"`
+}
+
+// Ntfy webhook struct
+type NtfyWebhook struct {
+	Click string `url:"click"`
+	Icon string `url:"icon"`
+	Title string `url:"title"`
+	Scheme string `url:"scheme"`
 }
 
 // App type
@@ -81,7 +89,7 @@ type GetInstalledAppsResponse struct {
 
 // Config
 type ServerConfig struct {
-	DiscordUrl string `validate:"required" message:"Discord webhook URL is required" mapstructure:"discord"`
+	NotifyUrl string `validate:"required" message:"Notify URL is required" mapstructure:"notify-url"`
 	RuntipiInternalUrl string `validate:"required" message:"Runtipi internal URL is required" mapstructure:"runtipi-internal"`
 	RuntipiUrl string `validate:"required" message:"Runtipi URL is required" mapstructure:"runtipi"`
 	JwtSecret string `validate:"required" message:"JWT secret is required" mapstructure:"jwt-secret"`

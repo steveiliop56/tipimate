@@ -48,10 +48,10 @@ var serverCmd = &cobra.Command{
 			utils.HandleErrorLogger(errors.New(validtor.Errors.One()), "Invalid config")
 		}
 
-		// Validate discord URL
+		// Validate URL
 		sr := router.ServiceRouter{}
-		_, discordValidateErr := sr.Locate(config.DiscordUrl)
-		utils.HandleErrorLogger(discordValidateErr, "Invalid Discord webhook URL")
+		_, urlValidateErr := sr.Locate(config.NotifyUrl)
+		utils.HandleErrorLogger(urlValidateErr, "Invalid notification URL")
 
 		// Validate runtipi URL
 		_, runtipiParseErr := url.Parse(config.RuntipiUrl)
@@ -144,7 +144,7 @@ var serverCmd = &cobra.Command{
 				log.Logger.Info().Str("appId", appWithUpdate.Id).Str("tipiVersion", strconv.Itoa(appWithUpdate.Version)).Str("dockerVersion", appWithUpdate.DockerVersion).Msg("App has an update")
 
 				// Send alert
-				alertErr := alerts.SendDiscord(&appWithUpdate, config.DiscordUrl, config.RuntipiUrl, config.Appstore)
+				alertErr := alerts.SendAlert(&appWithUpdate, config.NotifyUrl, config.RuntipiUrl, config.Appstore)
 
 				// Handle error
 				utils.HandleErrorLoggerNoExit(alertErr, "Failed to send app update alert")
@@ -160,13 +160,14 @@ var serverCmd = &cobra.Command{
 // Add command
 func init() {
 	serverViper.AutomaticEnv()
-	serverCmd.Flags().String("discord", "", "Discord webhook URL")
+	serverCmd.Flags().String("notify-url", "", "Notification URL (shoutrrr format)")
 	serverCmd.Flags().String("runtipi", "", "Runtipi server URL")
 	serverCmd.Flags().String("runtipi-internal", "", "Runtipi internal URL (used when running in the same server as runtipi)")
 	serverCmd.Flags().String("jwt-secret", "", "JWT secret")
 	serverCmd.Flags().String("appstore", "https://github.com/runtipi/runtipi-appstore", "Appstore URL for images")
 	serverCmd.Flags().String("db-path", "tipimate.db", "Database path")
 	serverCmd.Flags().Int("refresh", 30, "Refresh interval")
+	serverViper.BindEnv("notify-url", "NOTIFY_URL")
 	serverViper.BindEnv("jwt-secret", "JWT_SECRET")
 	serverViper.BindEnv("db-path", "DB_PATH")
 	serverViper.BindEnv("runtipi-internal", "RUNTIPI_INTERNAL")
