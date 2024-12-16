@@ -39,6 +39,12 @@ type NtfyWebhook struct {
 	Scheme string `url:"scheme"`
 }
 
+// Gotify webhook struct
+type GotifyWebhook struct {
+	DisableTls bool `url:"disableTls"`
+	Title string `url:"title"`
+}
+
 // App type
 type SimpleApp struct {
 	Name string
@@ -97,6 +103,7 @@ type ServerConfig struct {
 	DbPath string `validate:"required" mapstructure:"db-path"`
 	Refresh int `validate:"required" mapstructure:"refresh"`
 	LogLevel string `validate:"required,oneof=trace debug info warn error fatal panic" mapstructure:"log-level"`
+	NoTls bool `validate:"required" mapstructure:"no-tls"`
 }
 
 type CheckConfig struct {

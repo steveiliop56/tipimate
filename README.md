@@ -32,7 +32,7 @@ Tipimate v1.0.0 will come with all shoutrrr supported notification services, her
 - [ ] Join
 - [ ] Mattermost
 - [ ] Matrix
-- [ ] Ntfy
+- [x] Ntfy
 - [ ] OpsGenie
 - [ ] Pushbullet
 - [ ] Pushover

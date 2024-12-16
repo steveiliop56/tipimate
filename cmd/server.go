@@ -141,7 +141,7 @@ var serverCmd = &cobra.Command{
 				log.Logger.Info().Str("appId", appWithUpdate.Id).Str("tipiVersion", strconv.Itoa(appWithUpdate.Version)).Str("dockerVersion", appWithUpdate.DockerVersion).Msg("App has an update")
 
 				// Send alert
-				alertErr := alerts.SendAlert(&appWithUpdate, config.NotifyUrl, config.RuntipiUrl, config.Appstore)
+				alertErr := alerts.SendAlert(&appWithUpdate, config.NotifyUrl, config.RuntipiUrl, config.Appstore, config.NoTls)
 
 				// Handle error
 				utils.HandleErrorLoggerNoExit(alertErr, "Failed to send app update alert")
@@ -165,11 +165,13 @@ func init() {
 	serverCmd.Flags().String("db-path", "tipimate.db", "Database path")
 	serverCmd.Flags().Int("refresh", 30, "Refresh interval")
 	serverCmd.Flags().String("log-level", "info", "Log level")
+	serverCmd.Flags().Bool("no-tls", true, "Disable TLS (https) for services like Gotify, Ntfy etc.")
 	serverViper.BindEnv("notify-url", "NOTIFY_URL")
 	serverViper.BindEnv("jwt-secret", "JWT_SECRET")
 	serverViper.BindEnv("db-path", "DB_PATH")
 	serverViper.BindEnv("runtipi-internal", "RUNTIPI_INTERNAL")
 	serverViper.BindEnv("log-level", "LOG_LEVEL")
+	serverViper.BindEnv("no-tls", "NO_TLS")
 	serverViper.BindPFlags(serverCmd.Flags())
 	rootCmd.AddCommand(serverCmd)
 }
