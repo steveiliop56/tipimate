@@ -17,13 +17,13 @@ var rootCmd = &cobra.Command{
 
 // Execute command
 func Execute() {
+	rootCmd.Flags().BoolP("help", "h", false, "Show this message")
 	cc.Init(&cc.Config{
         RootCmd:       rootCmd,
         Headings:      cc.Blue,
         Example:       cc.Italic,
 		Commands: 	   cc.Green,
-        ExecName:      cc.White,
-        Flags:         cc.White,
+		ExecName:      cc.Green,
     })
 	err := rootCmd.Execute()
 	if err != nil {

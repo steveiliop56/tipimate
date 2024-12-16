@@ -157,6 +157,7 @@ var serverCmd = &cobra.Command{
 // Add command
 func init() {
 	serverViper.AutomaticEnv()
+	serverCmd.Flags().BoolP("help", "h", false, "Show this message")
 	serverCmd.Flags().String("notify-url", "", "Notification URL (shoutrrr format)")
 	serverCmd.Flags().String("runtipi", "", "Runtipi server URL")
 	serverCmd.Flags().String("runtipi-internal", "", "Runtipi internal URL (used when running in the same server as runtipi)")
@@ -166,6 +167,9 @@ func init() {
 	serverCmd.Flags().Int("refresh", 30, "Refresh interval")
 	serverCmd.Flags().String("log-level", "info", "Log level")
 	serverCmd.Flags().Bool("no-tls", true, "Disable TLS (https) for services like Gotify, Ntfy etc.")
+	serverCmd.MarkFlagRequired("notify-url")
+	serverCmd.MarkFlagRequired("runtipi")
+	serverCmd.MarkFlagRequired("jwt-secret")
 	serverViper.BindEnv("notify-url", "NOTIFY_URL")
 	serverViper.BindEnv("jwt-secret", "JWT_SECRET")
 	serverViper.BindEnv("db-path", "DB_PATH")

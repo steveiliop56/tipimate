@@ -67,6 +67,7 @@ var checkCmd = &cobra.Command{
 // Add command
 func init() {
 	checkViper.AutomaticEnv()
+	checkCmd.Flags().BoolP("help", "h", false, "Show this message")
 	checkCmd.Flags().String("runtipi", "", "Runtipi server URL")
 	checkCmd.Flags().String("jwt-secret", "", "Runtipi JWT secret")
 	checkViper.BindEnv("jwt-secret", "JWT_SECRET")

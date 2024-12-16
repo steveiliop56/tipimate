@@ -19,5 +19,6 @@ var versionCmd = &cobra.Command{
 
 // Add command
 func init() {
+	versionCmd.Flags().BoolP("help", "h", false, "Show this message")
 	rootCmd.AddCommand(versionCmd)
 }
