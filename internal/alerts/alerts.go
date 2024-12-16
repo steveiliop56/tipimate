@@ -33,6 +33,9 @@ func SendAlert(app *types.SimpleApp, notifyUrl string, runtipiUrl string, appsto
 				scheme = "http"
 			}
 			sendErr = SendNtfy(app, notifyUrl, runtipiUrl, appstore, scheme)
+		case "gotify":
+			log.Debug().Str("service", service).Msg("Selected Gotify notification service")
+			sendErr = SendGotify(app, notifyUrl, runtipiUrl, noTls)
 		default:
 			log.Warn().Str("service", service).Msg("Unsupported notification service")
 	}
