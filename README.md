@@ -8,6 +8,9 @@ TipiMate is an extremely simple tool that periodically checks for app updates in
 > [!WARNING]
 > TipiMate is still in early stages of development so issues are to be expected. If you encounter any please create an issue so I can fix them as soon as possible.
 
+> [!WARNING]
+> Files are constantly being updated in the repository resulting in some broken environment variables. Please make sure to use the environment variables listed [here](https://github.com/steveiliop56/tipimate/blob/b9e677b4b57d8fab534c6ff89794db0e49f5dc59/.env.example) throught the installation guide until v1.0.0
+
 ## Roadmap
 
 This project is still in early stages of development so it only includes the basic features but I am planning to add the following ones too.
