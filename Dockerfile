@@ -11,7 +11,7 @@ COPY cmd/ cmd/
 
 RUN go mod tidy
 
-RUN go build -o tipimate main.go
+RUN CGO_ENABLED=0 go build -o tipimate -ldflags "-s -w"
 
 # --- RUNNER ----
 FROM alpine:3.20 AS runner
