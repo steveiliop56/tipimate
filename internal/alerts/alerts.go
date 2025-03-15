@@ -14,41 +14,37 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func SendAlert(app *types.SimpleApp, notifyUrl string, runtipiUrl string, appstore string, noTls bool) (error) {
+func SendAlert(app *types.App, notifyUrl string, runtipiUrl string, appstore string, noTls bool) error {
 	// Vars
-	var sendErr error
+	var err error
 
 	// Get notification URL service
 	service := strings.Split(notifyUrl, "://")[0]
 
 	// Use correct service based on URL
 	switch service {
-		case "discord":
-			log.Debug().Str("service", service).Msg("Selected Discord notification service")
-			sendErr = SendDiscord(app, notifyUrl, runtipiUrl, appstore)
-		case "ntfy":
-			log.Debug().Str("service", service).Msg("Selected Ntfy notification service")
-			scheme := "https"
-			if noTls {
-				scheme = "http"
-			}
-			sendErr = SendNtfy(app, notifyUrl, runtipiUrl, appstore, scheme)
-		case "gotify":
-			log.Debug().Str("service", service).Msg("Selected Gotify notification service")
-			sendErr = SendGotify(app, notifyUrl, runtipiUrl, noTls)
-		default:
-			log.Warn().Str("service", service).Msg("Unsupported notification service")
+	case "discord":
+		log.Debug().Str("service", service).Msg("Selected Discord notification service")
+		err = SendDiscord(app, notifyUrl, runtipiUrl, appstore)
+	case "ntfy":
+		log.Debug().Str("service", service).Msg("Selected Ntfy notification service")
+		err = SendNtfy(app, notifyUrl, runtipiUrl, appstore, noTls)
+	case "gotify":
+		log.Debug().Str("service", service).Msg("Selected Gotify notification service")
+		err = SendGotify(app, notifyUrl, runtipiUrl, noTls)
+	default:
+		log.Warn().Str("service", service).Msg("Unsupported notification service")
 	}
 
 	// Handle error
-	if sendErr != nil {
-		return sendErr
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func SendDiscord(app *types.SimpleApp, discordUrl string, runtipiUrl string, appstore string) (error) {
+func SendDiscord(app *types.App, discordUrl string, runtipiUrl string, appstore string) error {
 	// Vars
 	appUrl := fmt.Sprintf("%s/apps/%s", runtipiUrl, app.Id)
 	description := fmt.Sprintf("Your app %s has an available update!\nUpdate to version `%s` (%d)", app.Name, app.DockerVersion, app.Version)
@@ -58,10 +54,10 @@ func SendDiscord(app *types.SimpleApp, discordUrl string, runtipiUrl string, app
 	var message types.DiscordMessage
 	message.Embeds = []types.DiscordEmbed{
 		{
-			Title: app.Name,
+			Title:       app.Name,
 			Description: description,
-			Url: appUrl,
-			Color: "3126084",
+			Url:         appUrl,
+			Color:       "3126084",
 			Footer: types.DiscordEmbedFooter{
 				Text: "Created at",
 			},
@@ -72,36 +68,36 @@ func SendDiscord(app *types.SimpleApp, discordUrl string, runtipiUrl string, app
 		},
 	}
 	message.AvatarUrl = constants.RuntipiLogoUrl
-	message.Username = "TipiMate"
+	message.Username = "Tipimate"
 
 	// Query params
 	var webhook types.DiscordWebhook
 	webhook.Json = true
-	
-	queries, queriesErr := query.Values(webhook)
-	if queriesErr != nil {
-		return queriesErr
+
+	queries, err := query.Values(webhook)
+	if err != nil {
+		return err
 	}
 
 	// Final url
 	url := fmt.Sprintf("%s?%s", discordUrl, queries.Encode())
 
 	// Marshal message
-	messageJson, marshalErr := json.Marshal(message)
-	if marshalErr != nil {
-		return marshalErr
+	messageJson, err := json.Marshal(message)
+	if err != nil {
+		return err
 	}
 
 	// Send message
-	sendErr := shoutrrr.Send(url, string(messageJson))
-	if sendErr != nil {
-		return sendErr
+	err = shoutrrr.Send(url, string(messageJson))
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func SendNtfy(app *types.SimpleApp, ntfyUrl string, runtipiUrl string, appstore string, scheme string) (error) {
+func SendNtfy(app *types.App, ntfyUrl string, runtipiUrl string, appstore string, noTls bool) error {
 	// Vars
 	appUrl := fmt.Sprintf("%s/apps/%s", runtipiUrl, app.Id)
 	description := fmt.Sprintf("Your app %s has an available update!\nUpdate to version %s (%d)", app.Name, app.DockerVersion, app.Version)
@@ -111,27 +107,32 @@ func SendNtfy(app *types.SimpleApp, ntfyUrl string, runtipiUrl string, appstore 
 	webhook.Click = appUrl
 	webhook.Icon = utils.GetAppImageUrl(app.Id, appstore)
 	webhook.Title = app.Name
-	webhook.Scheme = scheme
+
+	if noTls {
+		webhook.Scheme = "http"
+	} else {
+		webhook.Scheme = "https"
+	}
 
 	// Query params
-	queries, queriesErr := query.Values(webhook)
-	if queriesErr != nil {
-		return queriesErr
+	queries, err := query.Values(webhook)
+	if err != nil {
+		return err
 	}
 
 	// Final url
 	url := fmt.Sprintf("%s?%s", ntfyUrl, queries.Encode())
 
 	// Send
-	sendErr := shoutrrr.Send(url, description)
-	if sendErr != nil {
-		return sendErr
+	err = shoutrrr.Send(url, description)
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func SendGotify(app *types.SimpleApp, gotifyUrl string, runtipiUrl string, noTls bool) (error) {
+func SendGotify(app *types.App, gotifyUrl string, runtipiUrl string, noTls bool) error {
 	// Vars
 	appUrl := fmt.Sprintf("%s/apps/%s", runtipiUrl, app.Id)
 	description := fmt.Sprintf("Your app %s has an available update!\nUpdate to version %s (%d)\nVisit %s for more information", app.Name, app.DockerVersion, app.Version, appUrl)
@@ -142,18 +143,18 @@ func SendGotify(app *types.SimpleApp, gotifyUrl string, runtipiUrl string, noTls
 	webhook.DisableTls = noTls
 
 	// Query params
-	queries, queriesErr := query.Values(webhook)
-	if queriesErr != nil {
-		return queriesErr
+	queries, err := query.Values(webhook)
+	if err != nil {
+		return err
 	}
 
 	// Final url
 	url := fmt.Sprintf("%s?%s", gotifyUrl, queries.Encode())
 
 	// Send
-	sendErr := shoutrrr.Send(url, description)
-	if sendErr != nil {
-		return sendErr
+	err = shoutrrr.Send(url, description)
+	if err != nil {
+		return err
 	}
 
 	return nil

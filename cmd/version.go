@@ -7,18 +7,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Command
+// Version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print the version number of TipiMate",
-	Long: "All software has versions. This is TipiMate's",
+	Short: "Show the version of tipimate",
+	Long:  "All software has versions. This is tipimate's",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("TipiMate %s\n", assets.Version)
+		fmt.Printf("Tipimate %s\n", assets.Version)
 	},
 }
 
 // Add command
 func init() {
-	versionCmd.Flags().BoolP("help", "h", false, "Show this message")
 	rootCmd.AddCommand(versionCmd)
 }

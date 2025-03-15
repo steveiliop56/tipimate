@@ -36,8 +36,8 @@ func GetInstalledApps(token string, runtipiUrl string) (types.GetInstalledAppsRe
 
 	// Create transport
 	tr := &http.Transport{
-        TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-    }
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 
 	// Create client
 	client := http.Client{
@@ -45,26 +45,26 @@ func GetInstalledApps(token string, runtipiUrl string) (types.GetInstalledAppsRe
 	}
 
 	// Create request
-	req, reqErr := http.NewRequest("GET", appsUrl, nil)
-	if reqErr != nil {
-		return response, reqErr
+	req, err := http.NewRequest("GET", appsUrl, nil)
+	if err != nil {
+		return response, err
 	}
 
 	// Set headers
 	req.Header.Set("Authorization", bearer)
 
 	// Send request
-	res, sendErr := client.Do(req)
-	if sendErr != nil {
-		return response, sendErr
+	res, err := client.Do(req)
+	if err != nil {
+		return response, err
 	}
 
 	defer res.Body.Close()
 
 	// Decode response
-	decodeErr := json.NewDecoder(res.Body).Decode(&response)
-	if decodeErr != nil {
-		return response, decodeErr
+	err = json.NewDecoder(res.Body).Decode(&response)
+	if err != nil {
+		return response, err
 	}
 
 	// Return response

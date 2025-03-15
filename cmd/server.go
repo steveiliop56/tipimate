@@ -20,47 +20,48 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Viper
-var serverViper = viper.New()
-
-// Command
+// Server command
 var serverCmd = &cobra.Command{
-	Use: "server",
-	Short: "Start the Tipicord server",
-	Long: "Use the server command to automatically check for updates on your Runtipi server and send them to your Discord server",
+	Use:   "server",
+	Short: "Start the tipimate server",
+	Long:  "Use the server command to automatically check for updates on your runtipi server and send you notifications when updates are available",
 	Run: func(cmd *cobra.Command, args []string) {
+		// Logger
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}).With().Timestamp().Logger().Level(zerolog.FatalLevel)
+
 		// Get config
 		var config types.ServerConfig
-		viperParseErr := serverViper.Unmarshal(&config)
-		utils.HandleError(viperParseErr, "Failed to parse config")
+		err := viper.Unmarshal(&config)
+		handleErrorLogger(err, "Failed to parse config")
+
 		if config.RuntipiInternalUrl == "" {
 			config.RuntipiInternalUrl = config.RuntipiUrl
 		}
 
 		// Validate config
-		validateErr := validator.New().Struct(config)
-		utils.HandleError(validateErr, "Failed to validate config")
+		err = validator.New().Struct(config)
+		handleErrorLogger(err, "Failed to validate config")
 
-		// Logger
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}).With().Timestamp().Logger().Level(utils.GetLogLevel(config.LogLevel))
-		log.Info().Str("version", assets.Version).Msg("Starting Tipicord server")
+		// Configure logger
+		log.Level(utils.GetLogLevel(config.LogLevel))
+		log.Info().Str("version", assets.Version).Msg("Starting tipimate server")
 
 		// Validate URL
 		sr := router.ServiceRouter{}
-		_, urlValidateErr := sr.Locate(config.NotifyUrl)
-		utils.HandleErrorLogger(urlValidateErr, "Invalid notification URL")
+		_, err = sr.Locate(config.NotifyUrl)
+		handleErrorLogger(err, "Invalid notification URL")
 
 		// Validate runtipi URL
-		_, runtipiParseErr := url.Parse(config.RuntipiUrl)
-		utils.HandleErrorLogger(runtipiParseErr, "Invalid Runtipi server URL")
+		_, err = url.Parse(config.RuntipiUrl)
+		handleErrorLogger(err, "Invalid runtipi URL")
 
 		// Initialize db
-		db, dbErr := database.InitDb(config.DbPath)
-		utils.HandleErrorLogger(dbErr, "Failed to initialize database")
+		db, err := database.InitDb(config.DbPath)
+		handleErrorLogger(err, "Failed to initialize database")
 
 		// Create JWT
-		token, jwtErr := api.CreateJWT(config.JwtSecret)
-		utils.HandleErrorLogger(jwtErr, "Failed to create JWT token")
+		token, err := api.CreateJWT(config.JwtSecret)
+		handleErrorLogger(err, "Failed to create JWT token")
 
 		// Main loops
 		for {
@@ -68,11 +69,8 @@ var serverCmd = &cobra.Command{
 
 			// Get installed apps
 			log.Info().Msg("Getting installed apps")
-			installedApps, installedAppsErr := api.GetInstalledApps(token, config.RuntipiInternalUrl)
-			if installedAppsErr != nil {
-				utils.HandleErrorLoggerNoExit(installedAppsErr, "Failed to get installed apps")
-				continue
-			}
+			installedApps, err := api.GetInstalledApps(token, config.RuntipiInternalUrl)
+			handleErrorLogger(err, "Failed to get installed apps")
 
 			// Get installed app ids
 			installedAppIds := make(map[string]bool)
@@ -94,24 +92,24 @@ var serverCmd = &cobra.Command{
 
 			// Get apps with updates
 			log.Info().Msg("Comparing versions")
-			appsWithUpdates := []types.SimpleApp{}
+			appsWithUpdates := []types.App{}
 
 			for _, app := range installedApps.Installed {
 				// Get app from database
 				var dbApp database.Schema
-		 		dbRes := db.First(&dbApp, "id = ?", app.App.Id)
+				dbRes := db.First(&dbApp, "id = ?", app.App.Id)
 
 				// Check if app is not in database
 				if dbRes.RowsAffected == 0 {
 					// Create app in database
-					db.Create(&database.Schema{ Id: app.App.Id, Version: app.App.Version, LatestVersion: app.UpdateInfo.LatestVersion })
+					db.Create(&database.Schema{Id: app.App.Id, Version: app.App.Version, LatestVersion: app.UpdateInfo.LatestVersion})
 
 					// Check for updates
 					if app.App.Version < app.UpdateInfo.LatestVersion {
-						appsWithUpdates = append(appsWithUpdates, types.SimpleApp{
-							Id: app.App.Id,
-							Name: app.Info.Name,
-							Version: app.App.Version,
+						appsWithUpdates = append(appsWithUpdates, types.App{
+							Id:            app.App.Id,
+							Name:          app.Info.Name,
+							Version:       app.App.Version,
 							DockerVersion: app.UpdateInfo.LatestDockerVersion,
 						})
 					}
@@ -120,16 +118,16 @@ var serverCmd = &cobra.Command{
 					if dbApp.LatestVersion != app.UpdateInfo.LatestVersion || dbApp.Version != app.App.Version {
 						// Check for updates
 						if app.App.Version < app.UpdateInfo.LatestVersion {
-							appsWithUpdates = append(appsWithUpdates, types.SimpleApp{
-								Id: app.App.Id,
-								Name: app.Info.Name,
-								Version: app.App.Version,
+							appsWithUpdates = append(appsWithUpdates, types.App{
+								Id:            app.App.Id,
+								Name:          app.Info.Name,
+								Version:       app.App.Version,
 								DockerVersion: app.UpdateInfo.LatestDockerVersion,
 							})
 						}
 
 						// Modify db
-						db.Model(&dbApp).Updates(database.Schema{ LatestVersion: app.UpdateInfo.LatestVersion, Version: app.App.Version })
+						db.Model(&dbApp).Updates(database.Schema{LatestVersion: app.UpdateInfo.LatestVersion, Version: app.App.Version})
 					}
 				}
 			}
@@ -144,7 +142,7 @@ var serverCmd = &cobra.Command{
 				alertErr := alerts.SendAlert(&appWithUpdate, config.NotifyUrl, config.RuntipiUrl, config.Appstore, config.NoTls)
 
 				// Handle error
-				utils.HandleErrorLoggerNoExit(alertErr, "Failed to send app update alert")
+				handleErrorLogger(alertErr, "Failed to send alert")
 			}
 
 			// Sleep
@@ -154,28 +152,39 @@ var serverCmd = &cobra.Command{
 	},
 }
 
+// Handle error with logger
+func handleErrorLogger(err error, msg string) {
+	if err != nil {
+		log.Fatal().Err(err).Msg(msg)
+	}
+}
+
 // Add command
 func init() {
-	serverViper.AutomaticEnv()
-	serverCmd.Flags().BoolP("help", "h", false, "Show this message")
+	// Viper
+	viper.AutomaticEnv()
+
+	// Flags
 	serverCmd.Flags().String("notify-url", "", "Notification URL (shoutrrr format)")
 	serverCmd.Flags().String("runtipi", "", "Runtipi server URL")
 	serverCmd.Flags().String("runtipi-internal", "", "Runtipi internal URL (used when running in the same server as runtipi)")
 	serverCmd.Flags().String("jwt-secret", "", "JWT secret")
 	serverCmd.Flags().String("appstore", "https://github.com/runtipi/runtipi-appstore", "Appstore URL for images")
 	serverCmd.Flags().String("db-path", "tipimate.db", "Database path")
-	serverCmd.Flags().Int("refresh", 30, "Refresh interval")
 	serverCmd.Flags().String("log-level", "info", "Log level")
+	serverCmd.Flags().Int("refresh", 30, "Refresh interval")
 	serverCmd.Flags().Bool("no-tls", true, "Disable TLS (https) for services like Gotify, Ntfy etc.")
-	serverCmd.MarkFlagRequired("notify-url")
-	serverCmd.MarkFlagRequired("runtipi")
-	serverCmd.MarkFlagRequired("jwt-secret")
-	serverViper.BindEnv("notify-url", "NOTIFY_URL")
-	serverViper.BindEnv("jwt-secret", "JWT_SECRET")
-	serverViper.BindEnv("db-path", "DB_PATH")
-	serverViper.BindEnv("runtipi-internal", "RUNTIPI_INTERNAL")
-	serverViper.BindEnv("log-level", "LOG_LEVEL")
-	serverViper.BindEnv("no-tls", "NO_TLS")
-	serverViper.BindPFlags(serverCmd.Flags())
+
+	// Bind flags
+	viper.BindEnv("notify-url", "NOTIFY_URL")
+	viper.BindEnv("runtipi", "RUNTIPI_URL")
+	viper.BindEnv("runtipi-internal", "RUNTIPI_INTERNAL")
+	viper.BindEnv("jwt-secret", "JWT_SECRET")
+	viper.BindEnv("appstore", "APPSTORE")
+	viper.BindEnv("db-path", "DB_PATH")
+	viper.BindEnv("log-level", "LOG_LEVEL")
+	viper.BindEnv("no-tls", "NO_TLS")
+
+	// Add command
 	rootCmd.AddCommand(serverCmd)
 }

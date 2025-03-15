@@ -4,27 +4,18 @@ import (
 	"fmt"
 	"os"
 
-	cc "github.com/ivanpirog/coloredcobra"
 	"github.com/spf13/cobra"
 )
 
 // Main command
 var rootCmd = &cobra.Command{
 	Use:   "tipimate",
-	Short: "Discord notifications for your runtipi server",
-	Long: "TipiMate is a simple tool that monitors your runtipi server for app updates and notifies you via Discord notifications",
+	Short: "App update notifications for your runtipi server!",
+	Long:  "Tipimate is a simple tool that sends you notification when your runtipi apps have an available update.",
 }
 
 // Execute command
 func Execute() {
-	rootCmd.Flags().BoolP("help", "h", false, "Show this message")
-	cc.Init(&cc.Config{
-        RootCmd:       rootCmd,
-        Headings:      cc.Blue,
-        Example:       cc.Italic,
-		Commands: 	   cc.Green,
-		ExecName:      cc.Green,
-    })
 	err := rootCmd.Execute()
 	if err != nil {
 		fmt.Printf("An error occured while executing, error: %s\n", err.Error())
