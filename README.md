@@ -1,4 +1,17 @@
-# Tipimate
+<div align="center">
+    <img alt="tipimate" title="tipimate" width="256" src="assets/tipimate.png">
+    <h1>Tipimate</h1>
+    <p>The easiest way to get notified about updates for your Runtipi apps!</p>
+</div>
+
+<div align="center">
+    <img alt="License" src="https://img.shields.io/github/license/steveiliop56/tipimate">
+    <img alt="Release" src="https://img.shields.io/github/v/release/steveiliop56/tipimate">
+    <img alt="Commit activity" src="https://img.shields.io/github/commit-activity/w/steveiliop56/tipimate">
+    <img alt="Issues" src="https://img.shields.io/github/issues/steveiliop56/tipimate">
+</div>
+
+<br />
 
 Tipimate is an extremely simple and lightweight tool that check for updates in your [Runtipi](https://github.com/runtipi/runtipi) server and notifies you in your favorite notification system.
 
@@ -67,3 +80,10 @@ This project is still in early stages of development so bugs are to be expected.
 ## License
 
 TipiMate is licensed under the GNU General Public License v3.0. TL;DR — You may copy, distribute and modify the software as long as you track changes/dates in source files. Any modifications to or software including (via compiler) GPL-licensed code must also be made available under the GPL along with build & install instructions.
+
+## Acknowledgements
+
+Credits for the logo of this app go to:
+
+- **Freepik** for providing the hat and the mug.
+- **Renee French** for the original gopher logo.
