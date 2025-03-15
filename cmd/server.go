@@ -43,7 +43,7 @@ var serverCmd = &cobra.Command{
 		handleErrorLogger(err, "Failed to validate config")
 
 		// Configure logger
-		log.Level(utils.GetLogLevel(config.LogLevel))
+		log.Logger = log.Level(utils.GetLogLevel(config.LogLevel))
 		log.Info().Str("version", assets.Version).Msg("Starting tipimate server")
 
 		// Validate URL
