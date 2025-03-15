@@ -6,6 +6,46 @@ on:
       - "v*"
 
 jobs:
+  build-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.23
+
+      - name: Build
+        run: CGO_ENABLED=0 go build -o tipimate-linux-amd64 -ldflags "-s -w"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tipimate-linux-amd64
+          path: tipimate-linux-arm64
+
+  build-arm-cli:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.23
+
+      - name: Build
+        run: CGO_ENABLED=0 go build -o tipimate-linux-arm64 -ldflags "-s -w"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tipimate-linux-arm64
+          path: tipimate-linux-arm64
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -134,3 +174,22 @@ jobs:
         run: |
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
             $(printf 'ghcr.io/${{ github.repository_owner }}/tipimate@sha256:%s ' *)
+
+  release:
+    runs-on: ubuntu-latest
+    needs:
+      - build-cli
+      - build-arm-cli
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: tipimate-*
+          path: binaries
+          merge-multiple: true
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.head_ref }}
+          files: binaries/*

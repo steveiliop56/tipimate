@@ -1,6 +1,6 @@
 services:
   tipimate:
-    image: ghcr.io/steveiliop56/tipimate:latest
+    image: ghcr.io/steveiliop56/tipimate:v1
     container_name: tipimate
     restart: unless-stopped
     volumes:

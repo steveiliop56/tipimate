@@ -1,90 +1,52 @@
-# TipiMate
+# Tipimate
 
-TipiMate is an extremely simple tool that periodically checks for app updates in your [Runtipi](https://github.com/runtipi/runtipi) instance and then sends notifications to your prefered Discord channel/server. It is super fast, lightweight and only ~20mb in size.
+Tipimate is an extremely simple and lightweight tool that check for updates in your [Runtipi](https://github.com/runtipi/runtipi) server and notifies you in your favorite notification system.
 
 > [!NOTE]
-> TipiMate only supports runtipi instances from v3.7.0 and above since this version added the ability to use an API to communicate with the server.
+> Tipimate only supports runtipi instances from v3.7.0 and above since this version added the ability to use an API to communicate with the server.
 
 > [!WARNING]
-> TipiMate is still in early stages of development so issues are to be expected. If you encounter any please create an issue so I can fix them as soon as possible.
-
-> [!WARNING]
-> Files are constantly being updated in the repository resulting in some broken environment variables. Please make sure to use the environment variables listed [here](https://github.com/steveiliop56/tipimate/blob/b9e677b4b57d8fab534c6ff89794db0e49f5dc59/.env.example) throught the installation guide until v1.0.0
-
-## Roadmap
-
-This project is still in early stages of development so it only includes the basic features but I am planning to add the following ones too.
-
-- [ ] Multiple instances
-- [x] Configuration using environment variables (docker)
-- [ ] Support for other notifications service
-- [x] Project rename
-- [x] Possibly a CLI check mode like [Cup](https://github.com/sergi0g/cup)
-- [ ] Check for main Runtipi version
-
-## Notification services roadmap
-
-Tipimate v1.0.0 will come with all shoutrrr supported notification services, here are the ones implemented and the ones I will implement:
-
-- [ ] Bark
-- [x] Discord
-- [ ] Email
-- [x] Gotify
-- [ ] Google Chat
-- [ ] IFTTT
-- [ ] Join
-- [ ] Mattermost
-- [ ] Matrix
-- [x] Ntfy
-- [ ] OpsGenie
-- [ ] Pushbullet
-- [ ] Pushover
-- [ ] Rocketchat
-- [ ] Slack
-- [ ] Teams
-- [ ] Telegram
-- [ ] Zulip Chat
-- [ ] Generic Webhook
+> Tipimate is still in early stages of development so issues are to be expected. If you encounter any please create an issue so I can fix them as soon as possible.
 
 ## Getting started
 
-You can run tipimate with two ways, docker or binary. If you chose binary, you can grab the latest binary from the [releases](https://github.com/steveiliop56/tipimate/releases) page, then `chmod +x tipimate` and finally you can run it with `./tipimate`. *assuming the binary is named tipimate*
+You can run tipimate with two ways, either docker or binary. If you chose binary, you can grab the latest binary from the [releases](https://github.com/steveiliop56/tipimate/releases) page, then `chmod +x tipimate` and finally you can run it with `./tipimate`. _assuming the binary is named tipimate_
 
-Running with docker is also very easy, you just need to download the docker compose file from [here](./docker-compose.yml) and run tipimate with `docker compose up -d`. *make sure to change the environment variables accordingly*
+Running with docker is also very easy, you just need to download the docker compose file from [here](./docker-compose.yml) and run tipimate with `docker compose up -d`. _make sure to change the environment variables accordingly_
 
-If you prefer docker run command you can run it with
+If you prefer a docker run command, you can run it with:
 
 ```bash
-docker run -t -d --name tipimate -v ./data:/data -e NOTIFY_URL=your-discord-url -e RUNTIPI=your-runtipi-url -e JWT_SECRET=your-jwt-secret ghcr.io/steveiliop56/tipimate:latest
+docker run -t -d --name tipimate -v ./data:/data -e NOTIFY_URL=your-discord-url -e RUNTIPI=your-runtipi-url -e JWT_SECRET=your-jwt-secret ghcr.io/steveiliop56/tipimate:v1
 ```
 
 > [!TIP]
-> You can set the `--runtipi-internal` flag or the `RUNTIPI_INTERNAL` environment variable to something like `http://localhost` if TipiMate is running on the same server as your Runtipi server and then set the `--runtipi` flag or `RUNIPI` to the public URL of your instance e.g. `https://runtipi.mydomain.com` so TipiMate can both connect directly to Runtipi and show the correct URL on Discord. 
+> You can set the `--runtipi-internal` flag or the `RUNTIPI_INTERNAL` environment variable to something like `http://localhost` if tipimate is running on the same server as your runtipi server and then set the `--runtipi` flag or `RUNIPI` environment variable to the public URL of your instance e.g. `https://runtipi.mydomain.com` so tipimate can both connect directly to runtipi and show the correct URL on Discord.
 
 ## Building
 
-To build the project you need to have Go and Git installed. 
+To build the project you need to have Go and Git installed.
 
-You firstly have to clone the repository with
+You firstly have to clone the repository with:
 
 ```bash
 git clone https://github.com/steveiliop56/tipimate
 cd tipimate
 ```
 
-Then install dependencies
+Then install dependencies:
 
 ```bash
 go mod tidy
 ```
 
-And finally run it with
+And finally run it with:
 
 ```bash
 go run .
 ```
 
-Or build it with
+Or build it with:
 
 ```bash
 go build
@@ -96,11 +58,11 @@ If everything succeeds you should have a binary named `tipimate`.
 > You can also build for other operating systems/architectures using `GOOS=windows` and `GOARCH=arm64`.
 
 > [!NOTE]
-> You can also run a "development" docker compose file by copying the `.env.example` file to `.env`, changing your environment variables and running `docker compose -f docker-compose.dev.yml up --build --force-recreate`. With this way you can test your changes in the docker image too.
+> You can also run a "development" docker compose file by copying the `.env.example` file to `.env`, changing your environment variables and running `docker compose -f docker-compose.dev.yml up --build`. With this way you can test your changes in the docker image too.
 
 ## Contributing
 
-This project is still in early stages of development so bugs are to be expected. If you are interested in helping with my terrible go skills, feel free to create a pull request. Any help is appreciated!
+This project is still in early stages of development so bugs are to be expected. If you are interested in helping with the development feel free to create a pull request or an issue about a bug or a feature.
 
 ## License
 
