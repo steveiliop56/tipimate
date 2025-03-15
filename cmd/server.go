@@ -185,6 +185,9 @@ func init() {
 	viper.BindEnv("log-level", "LOG_LEVEL")
 	viper.BindEnv("no-tls", "NO_TLS")
 
+	// Bind flags to viper
+	viper.BindPFlags(serverCmd.Flags())
+
 	// Add command
 	rootCmd.AddCommand(serverCmd)
 }

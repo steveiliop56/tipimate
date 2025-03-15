@@ -84,6 +84,9 @@ func init() {
 	viper.BindEnv("runtipi", "RUNTIPI_URL")
 	viper.BindEnv("jwt-secret", "JWT_SECRET")
 
+	// Bind flags to viper
+	viper.BindPFlags(checkCmd.Flags())
+
 	// Add command
 	rootCmd.AddCommand(checkCmd)
 }
