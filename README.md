@@ -1,17 +1,9 @@
-<div align="center">
-    <img alt="tipimate" title="tipimate" width="256" src="assets/tipimate.png">
-    <h1>Tipimate</h1>
-    <p>The easiest way to get notified about updates for your Runtipi apps!</p>
-</div>
+# Tipimate
 
-<div align="center">
-    <img alt="License" src="https://img.shields.io/github/license/steveiliop56/tipimate">
-    <img alt="Release" src="https://img.shields.io/github/v/release/steveiliop56/tipimate">
-    <img alt="Commit activity" src="https://img.shields.io/github/commit-activity/w/steveiliop56/tipimate">
-    <img alt="Issues" src="https://img.shields.io/github/issues/steveiliop56/tipimate">
-</div>
-
-<br />
+<img alt="License" src="https://img.shields.io/github/license/steveiliop56/tipimate">
+<img alt="Release" src="https://img.shields.io/github/v/release/steveiliop56/tipimate">
+<img alt="Commit activity" src="https://img.shields.io/github/commit-activity/w/steveiliop56/tipimate">
+<img alt="Issues" src="https://img.shields.io/github/issues/steveiliop56/tipimate">
 
 Tipimate is an extremely simple and lightweight tool that check for updates in your [Runtipi](https://github.com/runtipi/runtipi) server and notifies you in your favorite notification system.
 
