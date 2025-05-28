@@ -73,10 +73,10 @@ var checkCmd = &cobra.Command{
 				_, slug := utils.SplitURN(app.Info.Urn)
 				appstore := utils.GetAppstore(appstores.Appstores, slug)
 				if appstore == nil {
-					fmt.Printf("%s Update available for %s (%s) to version %s (%d)\n", color.GreenString("↻"), app.Info.Name, "Unknown Appstore", app.Metadata.LatestDockerVersion, app.Metadata.LatestVersion)
+					fmt.Printf("%s Update available for the app %s from the %s appstore to version %s (%d)!\n", color.GreenString("↻"), app.Info.Name, "Unknown Appstore", app.Metadata.LatestDockerVersion, app.Metadata.LatestVersion)
 					continue
 				}
-				fmt.Printf("%s Update available for %s (%s) to version %s (%d)\n", color.GreenString("↻"), app.Info.Name, appstore.Name, app.Metadata.LatestDockerVersion, app.Metadata.LatestVersion)
+				fmt.Printf("%s Update available for the app %s from the %s appstore to version %s (%d)!\n", color.GreenString("↻"), app.Info.Name, appstore.Name, app.Metadata.LatestDockerVersion, app.Metadata.LatestVersion)
 			}
 		}
 

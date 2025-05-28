@@ -133,12 +133,16 @@ var serverCmd = &cobra.Command{
 					continue
 				}
 
+				log.Debug().Interface("app", app).Msg("App has an update")
+
 				// Get app from database
 				var dbApp database.Schema
 				dbRes := db.First(&dbApp, "urn = ?", app.Info.Urn)
 
 				// Check if app is not in database
 				if dbRes.RowsAffected == 0 {
+					log.Debug().Str("urn", app.Info.Urn).Msg("App not found in database, creating new entry")
+
 					// Create app in database
 					db.Create(&database.Schema{Urn: app.Info.Urn, Version: app.App.Version, LatestVersion: app.Metadata.LatestVersion})
 
@@ -150,8 +154,12 @@ var serverCmd = &cobra.Command{
 						DockerVersion: app.Metadata.LatestDockerVersion,
 					})
 				} else {
+					log.Debug().Str("urn", app.Info.Urn).Msg("App found in database, checking versions")
+
 					// Modify db if version is different
 					if dbApp.Version != app.App.Version || dbApp.LatestVersion != app.Metadata.LatestVersion {
+						log.Debug().Str("urn", app.Info.Urn).Msg("Updating app in database")
+
 						db.Model(&dbApp).Updates(database.Schema{LatestVersion: app.Metadata.LatestVersion, Version: app.App.Version})
 
 						// Add app to updates
