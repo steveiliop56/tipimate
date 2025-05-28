@@ -1,5 +1,5 @@
 # Arguments
-ARG TIPIMATE_VERSION=development
+ARG TIPIMATE_VERSION
 
 # Builder
 FROM golang:1.23-alpine3.20 AS builder
@@ -25,6 +25,6 @@ RUN mkdir /data
 
 COPY --from=builder /build/tipimate /tipimate
 
-ENV DATABASE_PATH=/data/tipimate.db
+ENV TIPIMATE_DATABASE_PATH=/data/tipimate.db
 
 ENTRYPOINT ["/tipimate/tipimate", "server"]
