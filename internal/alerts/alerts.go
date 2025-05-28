@@ -92,7 +92,7 @@ func (alerts *Alerts) sendDiscord(app *types.App, appstore types.RuntipiAppstore
 			Timestamp: currentTime,
 		},
 	}
-	message.AvatarUrl = constants.LogoUrl
+	message.AvatarUrl = constants.RuntipiLogo
 	message.Username = "Tipimate"
 
 	// Query params
