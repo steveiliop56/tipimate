@@ -8,12 +8,12 @@ import (
 
 type Schema struct {
 	gorm.Model
-	Id            string `json:"id"`
+	Urn           string `json:"urn"`
 	Version       int    `json:"version"`
 	LatestVersion int    `json:"latestVersion"`
 }
 
-func InitDb(path string) (*gorm.DB, error) {
+func InitDatabase(path string) (*gorm.DB, error) {
 	// Open db
 	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),

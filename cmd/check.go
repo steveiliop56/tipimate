@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 	"tipimate/internal/api"
 	"tipimate/internal/types"
+	"tipimate/internal/utils"
 
 	"github.com/briandowns/spinner"
 	"github.com/fatih/color"
@@ -25,7 +27,7 @@ var checkCmd = &cobra.Command{
 	Long:  "Check for app updates on your runtipi server from your terminal",
 	Run: func(cmd *cobra.Command, args []string) {
 		// Spinner
-		s.Suffix = "Getting apps with updates..."
+		s.Suffix = " Getting apps with updates..."
 		s.Start()
 
 		// Get config
@@ -41,22 +43,45 @@ var checkCmd = &cobra.Command{
 		_, err = url.Parse(config.RuntipiUrl)
 		handleErrorSpinner(err, "Invalid runtipi URL")
 
-		// Create JWT token
-		jwtToken, err := api.CreateJWT(config.JwtSecret)
-		handleErrorSpinner(err, "Failed to create JWT token")
+		// Create API client
+		apiConfig := types.APIConfig{
+			RuntipiUrl: config.RuntipiUrl,
+			Secret:     config.JwtSecret,
+			Insecure:   config.Insecure,
+		}
+
+		api, err := api.NewAPI(apiConfig)
+		handleErrorSpinner(err, "Failed to create API client")
 
 		// Get installed apps
-		installedApps, err := api.GetInstalledApps(jwtToken, config.RuntipiUrl)
+		apps, err := api.GetInstalledApps()
 		handleErrorSpinner(err, "Failed to get installed apps")
+
+		// Get appstores
+		appstores, err := api.GetAppstores()
+		handleErrorSpinner(err, "Failed to get appstores")
 
 		// Stop spinner
 		s.Stop()
 
+		updatesAvailable := false
+
 		// Check for updates
-		for _, app := range installedApps.Installed {
-			if app.App.Version < app.UpdateInfo.LatestVersion {
-				fmt.Printf("%s Update available for %s to version %s (%d)\n", color.GreenString("↻"), app.Info.Name, app.UpdateInfo.LatestDockerVersion, app.UpdateInfo.LatestVersion)
+		for _, app := range apps.Installed {
+			if app.App.Version < app.Metadata.LatestVersion {
+				updatesAvailable = true
+				_, slug := utils.SplitURN(app.Info.Urn)
+				appstore := utils.GetAppstore(appstores.Appstores, slug)
+				if appstore == nil {
+					fmt.Printf("%s Update available for %s (%s) to version %s (%d)\n", color.GreenString("↻"), app.Info.Name, "Unknown Appstore", app.Metadata.LatestDockerVersion, app.Metadata.LatestVersion)
+					continue
+				}
+				fmt.Printf("%s Update available for %s (%s) to version %s (%d)\n", color.GreenString("↻"), app.Info.Name, appstore.Name, app.Metadata.LatestDockerVersion, app.Metadata.LatestVersion)
 			}
+		}
+
+		if !updatesAvailable {
+			fmt.Printf("%s All apps are up to date!\n", color.GreenString("✔"))
 		}
 	},
 }
@@ -74,15 +99,14 @@ func handleErrorSpinner(err error, msg string) {
 // Add command
 func init() {
 	// Viper
+	viper.SetEnvPrefix("tipimate")
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
 
 	// Flags
-	checkCmd.Flags().String("runtipi", "", "The URL of your runtipi server")
-	checkCmd.Flags().String("jwt-secret", "", "The JWT secret of your server")
-
-	// Bind flags
-	viper.BindEnv("runtipi", "RUNTIPI_URL")
-	viper.BindEnv("jwt-secret", "JWT_SECRET")
+	checkCmd.Flags().String("runtipi-url", "", "Runtipi server URL")
+	checkCmd.Flags().String("jwt-secret", "", "JWT secret")
+	checkCmd.Flags().Bool("insecure", false, "Ignore self-signed certificates")
 
 	// Bind flags to viper
 	viper.BindPFlags(checkCmd.Flags())

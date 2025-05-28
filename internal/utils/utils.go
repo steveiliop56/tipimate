@@ -1,24 +1,11 @@
 package utils
 
 import (
-	"fmt"
 	"strings"
+	"tipimate/internal/types"
 
 	"github.com/rs/zerolog"
 )
-
-func GetAppImageUrl(appId string, appstore string) string {
-	// Vars
-	branch := "master"
-
-	// Check if other branch is used
-	if strings.Contains(appstore, "tree") {
-		branch = strings.Split(appstore, "tree/")[1]
-	}
-
-	// Return image
-	return fmt.Sprintf("%s/blob/%s/apps/%s/metadata/logo.jpg?raw=true", appstore, branch, appId)
-}
 
 func GetLogLevel(level string) zerolog.Level {
 	// Get level from string
@@ -40,4 +27,28 @@ func GetLogLevel(level string) zerolog.Level {
 	default:
 		return zerolog.InfoLevel
 	}
+}
+
+func SplitURN(urn string) (string, string) {
+	// Split URN by colon
+	parts := strings.Split(urn, ":")
+	if len(parts) != 2 {
+		return "", ""
+	}
+
+	// Return parts
+	return parts[0], parts[1]
+}
+
+func GetAppstore(appstores []types.RuntipiAppstore, slug string) *types.RuntipiAppstore {
+	// Loop through appstores
+	for _, appstore := range appstores {
+		// Check if slug matches
+		if appstore.Slug == slug {
+			return &appstore
+		}
+	}
+
+	// Return nil if not found
+	return nil
 }

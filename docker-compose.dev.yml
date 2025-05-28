@@ -3,9 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: tipimate
     restart: unless-stopped
     env_file: .env
     volumes:
       - ./data:/data
-    
