@@ -24,6 +24,14 @@ func InitDatabase(path string) (*gorm.DB, error) {
 		return nil, err
 	}
 
+	// Migrate from v1 to v2
+	if !db.Migrator().HasColumn(&Schema{}, "urn") {
+		// Move id to urn
+		db.Migrator().RenameColumn(&Schema{}, "id", "urn")
+		// Add back the id column
+		db.Migrator().AddColumn(&Schema{}, "id")
+	}
+
 	// Migrate db
 	err = db.AutoMigrate(&Schema{})
 

@@ -59,6 +59,20 @@ var serverCmd = &cobra.Command{
 		db, err := database.InitDatabase(config.DatabasePath)
 		handleError(err, "Failed to initialize database")
 
+		// Migrate apps
+		var dbApps []database.Schema
+		db.Find(&dbApps)
+
+		for _, dbApp := range dbApps {
+			if !strings.Contains(dbApp.Urn, ":") {
+				log.Info().Str("id", dbApp.Urn).Msg("Migrating app to URN format")
+
+				db.Model(&dbApp).Updates(database.Schema{
+					Urn: dbApp.Urn + ":migrated",
+				})
+			}
+		}
+
 		// Create API
 		apiConfig := types.APIConfig{
 			RuntipiUrl: config.RuntipiUrl,
