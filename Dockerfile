@@ -1,8 +1,7 @@
-# Arguments
-ARG TIPIMATE_VERSION
-
 # Builder
 FROM golang:1.23-alpine3.20 AS builder
+
+ARG TIPIMATE_VERSION
 
 WORKDIR /build
 
@@ -12,7 +11,7 @@ COPY main.go main.go
 COPY internal/ internal/
 COPY cmd/ cmd/
 
-RUN go mod tidy
+RUN go mod download
 
 RUN go build -o tipimate -ldflags "-s -w -X tipimate/internal/constants.Version=${TIPIMATE_VERSION}"
 

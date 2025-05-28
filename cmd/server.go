@@ -44,6 +44,9 @@ var serverCmd = &cobra.Command{
 		log.Logger = log.Level(utils.GetLogLevel(config.LogLevel))
 		log.Info().Str("version", constants.Version).Msg("Starting tipimate")
 
+		// Dump configuration
+		log.Debug().Interface("config", config).Msg("Dumping configuration")
+
 		// Validate URL
 		sr := router.ServiceRouter{}
 		_, err = sr.Locate(config.NotificationUrl)
