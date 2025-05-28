@@ -39,7 +39,6 @@ func NewAPI(config types.APIConfig) (*API, error) {
 type API struct {
 	Client     http.Client
 	RuntipiUrl string
-	Secret     string
 	Token      string
 }
 
