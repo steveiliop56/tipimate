@@ -8,12 +8,12 @@ import (
 
 type Schema struct {
 	gorm.Model
-	Id            string `json:"id"`
+	Urn           string `json:"urn"`
 	Version       int    `json:"version"`
 	LatestVersion int    `json:"latestVersion"`
 }
 
-func InitDb(path string) (*gorm.DB, error) {
+func InitDatabase(path string) (*gorm.DB, error) {
 	// Open db
 	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
@@ -22,6 +22,9 @@ func InitDb(path string) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Rename the id column to urn
+	db.Migrator().RenameColumn(&Schema{}, "id", "urn")
 
 	// Migrate db
 	err = db.AutoMigrate(&Schema{})

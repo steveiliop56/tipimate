@@ -10,8 +10,8 @@ import (
 // Main command
 var rootCmd = &cobra.Command{
 	Use:   "tipimate",
-	Short: "App update notifications for your runtipi server!",
-	Long:  "Tipimate is a simple tool that sends you notification when your runtipi apps have an available update.",
+	Short: "App update notifications for your runtipi server",
+	Long:  "Tipimate is a simple tool that sends you notification when your runtipi apps have an available update",
 }
 
 // Execute command
