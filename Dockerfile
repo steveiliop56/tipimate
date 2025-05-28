@@ -1,5 +1,5 @@
 # Arguments
-ARG VERSION=development
+ARG TIPIMATE_VERSION=development
 
 # Builder
 FROM golang:1.23-alpine3.20 AS builder
@@ -14,7 +14,7 @@ COPY cmd/ cmd/
 
 RUN go mod tidy
 
-RUN go build -o tipimate -ldflags "-s -w -X tipimate/internal/constants.Version=${VERSION}"
+RUN go build -o tipimate -ldflags "-s -w -X tipimate/internal/constants.Version=${TIPIMATE_VERSION}"
 
 # Runner
 FROM alpine:3.20 AS runner

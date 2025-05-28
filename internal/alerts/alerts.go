@@ -75,7 +75,7 @@ func (alerts *Alerts) sendDiscord(app *types.App, appstore types.RuntipiAppstore
 	// Variables
 	id, _ := utils.SplitURN(app.Urn)
 	appURL := fmt.Sprintf("%s/apps/%s/%s", alerts.RuntipiUrl, appstore.Slug, id)
-	description := fmt.Sprintf("Your app %s (%s) has an available update!\nUpdate to version `%s` (%d)", app.Name, appstore.Name, app.DockerVersion, app.Version)
+	description := fmt.Sprintf("Your app %s from the %s appstore has an available update!\nUpdate to version `%s` (%d)", app.Name, appstore.Name, app.DockerVersion, app.Version)
 	currentTime := time.Now().Format(time.RFC3339)
 
 	// Message
@@ -126,7 +126,7 @@ func (alerts *Alerts) sendNtfy(app *types.App, appstore types.RuntipiAppstore) e
 	// Variables
 	id, _ := utils.SplitURN(app.Urn)
 	appURL := fmt.Sprintf("%s/apps/%s/%s", alerts.RuntipiUrl, appstore.Slug, id)
-	description := fmt.Sprintf("Your app %s (%s) has an available update!\nUpdate to version %s (%d)", app.Name, appstore.Name, app.DockerVersion, app.Version)
+	description := fmt.Sprintf("Your app %s from the %s appstore has an available update!\nUpdate to version %s (%d)", app.Name, appstore.Name, app.DockerVersion, app.Version)
 
 	// Message
 	var webhook types.NtfyWebhook
@@ -161,7 +161,7 @@ func (alerts *Alerts) sendGotify(app *types.App, appstore types.RuntipiAppstore)
 	// Vars
 	id, _ := utils.SplitURN(app.Urn)
 	appUrl := fmt.Sprintf("%s/apps/%s/%s", alerts.RuntipiUrl, appstore.Slug, id)
-	description := fmt.Sprintf("Your app %s (%s) has an available update!\nUpdate to version %s (%d)\nVisit %s for more information", app.Name, appstore.Name, app.DockerVersion, app.Version, appUrl)
+	description := fmt.Sprintf("Your app %s from the %s appstore has an available update!\nUpdate to version %s (%d)\nVisit %s for more information", app.Name, appstore.Name, app.DockerVersion, app.Version, appUrl)
 
 	// Message
 	var webhook types.GotifyWebhook
