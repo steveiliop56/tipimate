@@ -8,6 +8,7 @@ import (
 
 type Schema struct {
 	gorm.Model
+	Id            int    `json:"id" gorm:"primaryKey"`
 	Urn           string `json:"urn"`
 	Version       int    `json:"version"`
 	LatestVersion int    `json:"latestVersion"`
