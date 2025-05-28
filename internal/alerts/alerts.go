@@ -89,7 +89,7 @@ func (alerts *Alerts) sendDiscord(app *types.App, appstore types.RuntipiAppstore
 			Footer: types.DiscordEmbedFooter{
 				Text: "Updated at",
 			},
-			TimeStamp: currentTime,
+			Timestamp: currentTime,
 		},
 	}
 	message.AvatarUrl = constants.LogoUrl
@@ -146,7 +146,7 @@ func (alerts *Alerts) sendNtfy(app *types.App, appstore types.RuntipiAppstore) e
 	}
 
 	// Final url
-	url := fmt.Sprintf("%s?%s", alerts.RuntipiUrl, queries.Encode())
+	url := fmt.Sprintf("%s?%s", alerts.NotificationUrl, queries.Encode())
 
 	// Send
 	err = shoutrrr.Send(url, description)
@@ -160,7 +160,7 @@ func (alerts *Alerts) sendNtfy(app *types.App, appstore types.RuntipiAppstore) e
 func (alerts *Alerts) sendGotify(app *types.App, appstore types.RuntipiAppstore) error {
 	// Vars
 	id, _ := utils.SplitURN(app.Urn)
-	appUrl := fmt.Sprintf("%s/apps/%s/%s", alerts.RuntipiUrl, appstore.Name, id)
+	appUrl := fmt.Sprintf("%s/apps/%s/%s", alerts.RuntipiUrl, appstore.Slug, id)
 	description := fmt.Sprintf("Your app %s (%s) has an available update!\nUpdate to version %s (%d)\nVisit %s for more information", app.Name, appstore.Name, app.DockerVersion, app.Version, appUrl)
 
 	// Message

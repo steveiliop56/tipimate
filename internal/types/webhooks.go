@@ -12,7 +12,7 @@ type DiscordEmbed struct {
 	Url         string             `json:"url"`
 	Color       string             `json:"color"`
 	Footer      DiscordEmbedFooter `json:"footer"`
-	TimeStamp   string             `json:"timestamp"`
+	Timestamp   string             `json:"timestamp"`
 }
 
 // Discord webhook message

@@ -20,7 +20,7 @@ func NewAPI(config types.APIConfig) (*API, error) {
 
 	// Create transport
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: config.Insecure},
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: config.Insecure, MinVersion: tls.VersionTLS12},
 	}
 
 	// Create client
@@ -77,6 +77,11 @@ func (api *API) apiRequest(path string, method string) (*http.Response, error) {
 	res, err := api.Client.Do(req)
 	if err != nil {
 		return nil, err
+	}
+
+	// Check status code
+	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		return nil, fmt.Errorf("API request failed with status code: %d", res.StatusCode)
 	}
 
 	// Return response
