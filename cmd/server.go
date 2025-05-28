@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"net/url"
 	"os"
 	"strconv"
@@ -55,6 +56,21 @@ var serverCmd = &cobra.Command{
 		// Initialize database
 		db, err := database.InitDatabase(config.DatabasePath)
 		handleError(err, "Failed to initialize database")
+
+		// Migrate app urns
+		log.Info().Msg("Migrating app URNs in the database")
+
+		var dbApps []database.Schema
+		db.Find(&dbApps)
+
+		for _, dbApp := range dbApps {
+			if !strings.Contains(dbApp.Urn, ":") {
+				log.Info().Str("urn", dbApp.Urn).Msg("Migrating app URN to include appstore slug")
+
+				// Migrate URN to include appstore slug
+				db.Model(&dbApp).Updates(database.Schema{Urn: fmt.Sprintf("%s:migrated", dbApp.Urn)})
+			}
+		}
 
 		// Create API
 		apiConfig := types.APIConfig{

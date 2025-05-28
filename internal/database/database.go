@@ -23,6 +23,9 @@ func InitDatabase(path string) (*gorm.DB, error) {
 		return nil, err
 	}
 
+	// Rename the id column to urn
+	db.Migrator().RenameColumn(&Schema{}, "id", "urn")
+
 	// Migrate db
 	err = db.AutoMigrate(&Schema{})
 
