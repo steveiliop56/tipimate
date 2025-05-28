@@ -13,3 +13,6 @@ tipimate.exe
 
 # Data
 data
+
+# Test compose
+docker-compose.test.yml
