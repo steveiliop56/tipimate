@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/"
+    groups:
+      minor-patch:
+        update-types:
+          - "patch"
+          - "minor"
+    schedule:
+      interval: "weekly"
