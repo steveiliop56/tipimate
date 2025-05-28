@@ -6,10 +6,16 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-type Schema struct {
+type Apps struct {
 	gorm.Model
-	Id            int    `json:"id" gorm:"primaryKey"`
 	Urn           string `json:"urn"`
+	Version       int    `json:"version"`
+	LatestVersion int    `json:"latestVersion"`
+}
+
+type AppsOld struct {
+	gorm.Model
+	Id            string `json:"id"`
 	Version       int    `json:"version"`
 	LatestVersion int    `json:"latestVersion"`
 }
@@ -24,19 +30,43 @@ func InitDatabase(path string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	// Migrate from v1 to v2
-	if !db.Migrator().HasColumn(&Schema{}, "urn") {
-		// Move id to urn
-		db.Migrator().RenameColumn(&Schema{}, "id", "urn")
-		// Add back the id column
-		db.Migrator().AddColumn(&Schema{}, "id")
+	// Rename old table if it exists
+	if db.Migrator().HasTable("schemas") {
+		err = db.Migrator().RenameTable("schemas", "apps_old")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Migrate db
-	err = db.AutoMigrate(&Schema{})
+	err = db.AutoMigrate(&Apps{})
 
 	if err != nil {
 		return nil, err
+	}
+
+	// Migrate old data
+	var oldRecords []AppsOld
+	db.Table("apps_old").Find(&oldRecords)
+
+	for _, record := range oldRecords {
+		// Save new record
+		res := db.Create(&Apps{
+			Urn:           record.Id + ":migrated",
+			Version:       record.Version,
+			LatestVersion: record.LatestVersion,
+		})
+		if res.Error != nil {
+			return nil, res.Error
+		}
+	}
+
+	// Drop old table
+	if db.Migrator().HasTable("apps_old") {
+		err = db.Migrator().DropTable("apps_old")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Return db

@@ -59,20 +59,6 @@ var serverCmd = &cobra.Command{
 		db, err := database.InitDatabase(config.DatabasePath)
 		handleError(err, "Failed to initialize database")
 
-		// Migrate apps
-		var dbApps []database.Schema
-		db.Find(&dbApps)
-
-		for _, dbApp := range dbApps {
-			if !strings.Contains(dbApp.Urn, ":") {
-				log.Info().Str("id", dbApp.Urn).Msg("Migrating app to URN format")
-
-				db.Model(&dbApp).Updates(database.Schema{
-					Urn: dbApp.Urn + ":migrated",
-				})
-			}
-		}
-
 		// Create API
 		apiConfig := types.APIConfig{
 			RuntipiUrl: config.RuntipiUrl,
@@ -113,7 +99,7 @@ var serverCmd = &cobra.Command{
 			}
 
 			// Get apps from database
-			var dbApps []database.Schema
+			var dbApps []database.Apps
 			db.Find(&dbApps)
 
 			// Delete uninstalled apps
@@ -137,7 +123,7 @@ var serverCmd = &cobra.Command{
 				log.Debug().Interface("app", app).Msg("App has an update")
 
 				// Get app from database
-				var dbApp database.Schema
+				var dbApp database.Apps
 				dbRes := db.First(&dbApp, "urn = ?", app.Info.Urn)
 
 				// Check if app is not in database
@@ -145,7 +131,7 @@ var serverCmd = &cobra.Command{
 					log.Debug().Str("urn", app.Info.Urn).Msg("App not found in database, creating new entry")
 
 					// Create app in database
-					db.Create(&database.Schema{Urn: app.Info.Urn, Version: app.App.Version, LatestVersion: app.Metadata.LatestVersion})
+					db.Create(&database.Apps{Urn: app.Info.Urn, Version: app.App.Version, LatestVersion: app.Metadata.LatestVersion})
 
 					// Add app to updates
 					appsWithUpdates = append(appsWithUpdates, types.App{
@@ -161,7 +147,7 @@ var serverCmd = &cobra.Command{
 					if dbApp.Version != app.App.Version || dbApp.LatestVersion != app.Metadata.LatestVersion {
 						log.Debug().Str("urn", app.Info.Urn).Msg("Updating app in database")
 
-						db.Model(&dbApp).Updates(database.Schema{LatestVersion: app.Metadata.LatestVersion, Version: app.App.Version})
+						db.Model(&dbApp).Updates(database.Apps{LatestVersion: app.Metadata.LatestVersion, Version: app.App.Version})
 
 						// Add app to updates
 						appsWithUpdates = append(appsWithUpdates, types.App{
