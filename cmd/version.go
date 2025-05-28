@@ -13,7 +13,7 @@ var versionCmd = &cobra.Command{
 	Short: "Show the version of tipimate",
 	Long:  "All software has versions. This is tipimate's",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Tipimate %s\n", constants.Version)
+		fmt.Printf("Version: %s\n", constants.Version)
 	},
 }
 
