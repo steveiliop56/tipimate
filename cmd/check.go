@@ -68,6 +68,12 @@ var checkCmd = &cobra.Command{
 
 		// Check for updates
 		for _, app := range apps.Installed {
+			// If app has zeroed verions, ignore it
+			if app.Metadata.LatestDockerVersion == "0.0.0" || app.Metadata.LatestVersion == 0 {
+				continue
+			}
+
+			// Check if app is up to date
 			if app.App.Version < app.Metadata.LatestVersion {
 				updatesAvailable = true
 				_, slug := utils.SplitURN(app.Info.Urn)

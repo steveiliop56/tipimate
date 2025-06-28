@@ -79,7 +79,7 @@ var serverCmd = &cobra.Command{
 		alerts := alerts.NewAlerts(alertsConfig)
 
 		// Main loop
-		for {
+		for range time.Tick(time.Duration(config.Interval) * time.Minute) {
 			log.Info().Msg("Checking for updates")
 
 			// Get apps
@@ -117,6 +117,13 @@ var serverCmd = &cobra.Command{
 			for _, app := range apps.Installed {
 				// If app is up to date, ignore it
 				if app.App.Version == app.Metadata.LatestVersion {
+					log.Debug().Str("urn", app.Info.Urn).Msg("App is up to date, ignoring")
+					continue
+				}
+
+				// If app has zeroed verions, ignore it
+				if app.Metadata.LatestDockerVersion == "0.0.0" || app.Metadata.LatestVersion == 0 {
+					log.Debug().Str("urn", app.Info.Urn).Msg("App has zeroed version, ignoring")
 					continue
 				}
 
@@ -173,9 +180,6 @@ var serverCmd = &cobra.Command{
 				// Handle error
 				handleError(alertErr, "Failed to send alert")
 			}
-
-			// Sleep
-			time.Sleep(time.Duration(config.Interval) * time.Minute)
 		}
 
 	},
