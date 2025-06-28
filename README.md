@@ -4,10 +4,10 @@
 ![Release](https://img.shields.io/github/v/release/steveiliop56/tipimate)
 ![Issues](https://img.shields.io/github/issues/steveiliop56/tipimate)
 
-Tipimate is an extremely simple and lightweight tool that check for updates in your [Runtipi](https://github.com/runtipi/runtipi) server and notifies you in your favorite notification system.
+Tipimate is an extremely simple and lightweight tool that check for updates in your [Runtipi](https://github.com/runtipi/runtipi) server and notifies you through your favorite notification system.
 
 > [!NOTE]
-> Tipimate only supports runtipi instances from v3.7.0 and above since this version added the ability to use an API to communicate with the server.
+> Tipimate v2 and forward only supports runtipi instances from version v4 and above due to the API changes.
 
 ## Getting started
 
@@ -60,7 +60,7 @@ If everything succeeds you should have a binary named `tipimate`.
 
 ## Contributing
 
-If you are interested in helping with the development feel free to create a pull request or an issue about a bug or a feature.
+If you are interested in helping with the development feel free to create a pull request or an issue about a bug or a feature. All kinds of contributions are welcome!
 
 ## License
 
