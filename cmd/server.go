@@ -21,45 +21,35 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Server command
 var serverCmd = &cobra.Command{
 	Use:   "server",
 	Short: "Start the tipimate server",
 	Long:  "Use the server command to automatically check for updates on your runtipi server and send you notifications when updates are available",
 	Run: func(cmd *cobra.Command, args []string) {
-		// Logger
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}).With().Timestamp().Logger().Level(zerolog.FatalLevel)
 
-		// Get config
 		var config types.ServerConfig
 		err := viper.Unmarshal(&config)
 		handleError(err, "Failed to parse config")
 
-		// Validate config
 		err = validator.New().Struct(config)
 		handleError(err, "Failed to validate config")
 
-		// Configure logger
 		log.Logger = log.Level(utils.GetLogLevel(config.LogLevel))
 		log.Info().Str("version", constants.Version).Msg("Starting tipimate")
 
-		// Dump configuration
 		log.Debug().Interface("config", config).Msg("Dumping configuration")
 
-		// Validate URL
 		sr := router.ServiceRouter{}
 		_, err = sr.Locate(config.NotificationUrl)
 		handleError(err, "Invalid notification URL")
 
-		// Validate runtipi URL
 		_, err = url.Parse(config.RuntipiUrl)
 		handleError(err, "Invalid runtipi URL")
 
-		// Initialize database
 		db, err := database.InitDatabase(config.DatabasePath)
 		handleError(err, "Failed to initialize database")
 
-		// Create API
 		apiConfig := types.APIConfig{
 			RuntipiUrl: config.RuntipiUrl,
 			Secret:     config.JwtSecret,
@@ -69,40 +59,34 @@ var serverCmd = &cobra.Command{
 		api, err := api.NewAPI(apiConfig)
 		handleError(err, "Failed to create API client")
 
-		// Create alerts
 		alertsConfig := types.AlertsConfig{
 			NotificationUrl: config.NotificationUrl,
 			RuntipiUrl:      config.RuntipiUrl,
 			Insecure:        config.Insecure,
+			ServerName:      config.ServerName,
 		}
 
 		alerts := alerts.NewAlerts(alertsConfig)
 
-		// Main loop
 		for range time.Tick(time.Duration(config.Interval) * time.Minute) {
 			log.Info().Msg("Checking for updates")
 
-			// Get apps
 			log.Info().Msg("Getting installed apps")
 			apps, err := api.GetInstalledApps()
 			handleError(err, "Failed to get installed apps")
 
-			// Get appstores
 			log.Info().Msg("Getting appstores")
 			appstores, err := api.GetAppstores()
 			handleError(err, "Failed to get appstores")
 
-			// Get app ids
 			installedApps := make(map[string]bool)
 			for _, app := range apps.Installed {
 				installedApps[app.Info.Urn] = true
 			}
 
-			// Get apps from database
 			var dbApps []database.Apps
 			db.Find(&dbApps)
 
-			// Delete uninstalled apps
 			for _, dbApp := range dbApps {
 				if !installedApps[dbApp.Urn] {
 					log.Warn().Str("urn", dbApp.Urn).Msg("Deleting app from the database")
@@ -110,7 +94,6 @@ var serverCmd = &cobra.Command{
 				}
 			}
 
-			// Get apps with updates
 			log.Info().Msg("Comparing versions")
 			appsWithUpdates := []types.App{}
 
@@ -129,18 +112,12 @@ var serverCmd = &cobra.Command{
 
 				log.Debug().Interface("app", app).Msg("App has an update")
 
-				// Get app from database
 				var dbApp database.Apps
 				dbRes := db.First(&dbApp, "urn = ?", app.Info.Urn)
 
-				// Check if app is not in database
 				if dbRes.RowsAffected == 0 {
 					log.Debug().Str("urn", app.Info.Urn).Msg("App not found in database, creating new entry")
-
-					// Create app in database
 					db.Create(&database.Apps{Urn: app.Info.Urn, Version: app.App.Version, LatestVersion: app.Metadata.LatestVersion})
-
-					// Add app to updates
 					appsWithUpdates = append(appsWithUpdates, types.App{
 						Urn:           app.Info.Urn,
 						Name:          app.Info.Name,
@@ -150,13 +127,9 @@ var serverCmd = &cobra.Command{
 				} else {
 					log.Debug().Str("urn", app.Info.Urn).Msg("App found in database, checking versions")
 
-					// Modify db if version is different
 					if dbApp.Version != app.App.Version || dbApp.LatestVersion != app.Metadata.LatestVersion {
 						log.Debug().Str("urn", app.Info.Urn).Msg("Updating app in database")
-
 						db.Model(&dbApp).Updates(database.Apps{LatestVersion: app.Metadata.LatestVersion, Version: app.App.Version})
-
-						// Add app to updates
 						appsWithUpdates = append(appsWithUpdates, types.App{
 							Urn:           app.Info.Urn,
 							Name:          app.Info.Name,
@@ -167,17 +140,11 @@ var serverCmd = &cobra.Command{
 				}
 			}
 
-			// Send notifications
 			log.Info().Msg("Sending notifications")
 
 			for _, appWithUpdate := range appsWithUpdates {
-				// Log
 				log.Logger.Info().Str("urn", appWithUpdate.Urn).Str("tipiVersion", strconv.Itoa(appWithUpdate.Version)).Str("dockerVersion", appWithUpdate.DockerVersion).Msg("App has an update")
-
-				// Send alert
 				alertErr := alerts.SendAlert(&appWithUpdate, appstores.Appstores)
-
-				// Handle error
 				handleError(alertErr, "Failed to send alert")
 			}
 		}
@@ -185,21 +152,17 @@ var serverCmd = &cobra.Command{
 	},
 }
 
-// Handle error
 func handleError(err error, msg string) {
 	if err != nil {
 		log.Fatal().Err(err).Msg(msg)
 	}
 }
 
-// Add command
 func init() {
-	// Viper
 	viper.SetEnvPrefix("tipimate")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
 
-	// Flags
 	serverCmd.Flags().String("notification-url", "", "Notification URL (shoutrrr format)")
 	serverCmd.Flags().String("runtipi-url", "", "Runtipi server URL")
 	serverCmd.Flags().String("jwt-secret", "", "JWT secret")
@@ -207,10 +170,10 @@ func init() {
 	serverCmd.Flags().Int("interval", 30, "Refresh interval in minutes")
 	serverCmd.Flags().String("log-level", "info", "Log level (trace, debug, info, warn, error, fatal, panic)")
 	serverCmd.Flags().Bool("insecure", true, "Disable TLS (https) for services like Gotify, Ntfy etc.")
+	serverCmd.Flags().String("server-name", "", "Server name to use in notifications.")
 
 	// Bind flags to viper
 	viper.BindPFlags(serverCmd.Flags())
 
-	// Add command
 	rootCmd.AddCommand(serverCmd)
 }

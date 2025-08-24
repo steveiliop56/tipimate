@@ -41,14 +41,11 @@ func SplitURN(urn string) (string, string) {
 }
 
 func GetAppstore(appstores []types.RuntipiAppstore, slug string) *types.RuntipiAppstore {
-	// Loop through appstores
+	// Loop through appstores and check if slug matches
 	for _, appstore := range appstores {
-		// Check if slug matches
 		if appstore.Slug == slug {
 			return &appstore
 		}
 	}
-
-	// Return nil if not found
 	return nil
 }

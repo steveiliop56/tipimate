@@ -19,6 +19,7 @@ func NewAlerts(config types.AlertsConfig) *Alerts {
 		NotificationUrl: config.NotificationUrl,
 		RuntipiUrl:      config.RuntipiUrl,
 		Insecure:        config.Insecure,
+		ServerName:      config.ServerName,
 	}
 }
 
@@ -26,13 +27,12 @@ type Alerts struct {
 	NotificationUrl string
 	RuntipiUrl      string
 	Insecure        bool
+	ServerName      string
 }
 
 func (alerts *Alerts) SendAlert(app *types.App, appstores []types.RuntipiAppstore) error {
-	// Variables
 	var err error
 
-	// Get appstore
 	_, slug := utils.SplitURN(app.Urn)
 	appstore := utils.GetAppstore(appstores, slug)
 
@@ -45,10 +45,8 @@ func (alerts *Alerts) SendAlert(app *types.App, appstores []types.RuntipiAppstor
 		}
 	}
 
-	// Get notification URL service
 	service := strings.Split(alerts.NotificationUrl, "://")[0]
 
-	// Use correct service based on URL
 	switch service {
 	case "discord":
 		log.Debug().Str("service", service).Msg("Selected Discord notification service")
@@ -63,7 +61,6 @@ func (alerts *Alerts) SendAlert(app *types.App, appstores []types.RuntipiAppstor
 		log.Warn().Str("service", service).Msg("Unsupported notification service")
 	}
 
-	// Handle error
 	if err != nil {
 		return err
 	}
@@ -72,30 +69,32 @@ func (alerts *Alerts) SendAlert(app *types.App, appstores []types.RuntipiAppstor
 }
 
 func (alerts *Alerts) sendDiscord(app *types.App, appstore types.RuntipiAppstore) error {
-	// Variables
 	id, _ := utils.SplitURN(app.Urn)
 	appURL := fmt.Sprintf("%s/apps/%s/%s", alerts.RuntipiUrl, appstore.Slug, id)
 	description := fmt.Sprintf("Your app %s from the %s appstore has an available update!\nUpdate to version `%s` (%d).", app.Name, appstore.Name, app.DockerVersion, app.Version)
 	currentTime := time.Now().Format(time.RFC3339)
 
-	// Message
 	var message types.DiscordMessage
 	message.Embeds = []types.DiscordEmbed{
 		{
-			Title:       fmt.Sprintf("%s (%s)", app.Name, appstore.Name),
 			Description: description,
 			Url:         appURL,
 			Color:       "3126084",
+			Timestamp:   currentTime,
 			Footer: types.DiscordEmbedFooter{
 				Text: "Updated at",
 			},
-			Timestamp: currentTime,
 		},
 	}
 	message.AvatarUrl = constants.RuntipiLogo
 	message.Username = "Tipimate"
 
-	// Query params
+	if alerts.ServerName != "" {
+		message.Embeds[0].Title = fmt.Sprintf("%s - %s (%s)", alerts.ServerName, app.Name, appstore.Name)
+	} else {
+		message.Embeds[0].Title = fmt.Sprintf("%s (%s)", app.Name, appstore.Name)
+	}
+
 	var webhook types.DiscordWebhook
 	webhook.Json = true
 
@@ -104,16 +103,13 @@ func (alerts *Alerts) sendDiscord(app *types.App, appstore types.RuntipiAppstore
 		return err
 	}
 
-	// Final url
 	url := fmt.Sprintf("%s?%s", alerts.NotificationUrl, queries.Encode())
 
-	// Marshal message
 	messageJson, err := json.Marshal(message)
 	if err != nil {
 		return err
 	}
 
-	// Send message
 	err = shoutrrr.Send(url, string(messageJson))
 	if err != nil {
 		return err
@@ -123,15 +119,18 @@ func (alerts *Alerts) sendDiscord(app *types.App, appstore types.RuntipiAppstore
 }
 
 func (alerts *Alerts) sendNtfy(app *types.App, appstore types.RuntipiAppstore) error {
-	// Variables
 	id, _ := utils.SplitURN(app.Urn)
 	appURL := fmt.Sprintf("%s/apps/%s/%s", alerts.RuntipiUrl, appstore.Slug, id)
 	description := fmt.Sprintf("Your app %s from the %s appstore has an available update!\nUpdate to version %s (%d).", app.Name, appstore.Name, app.DockerVersion, app.Version)
 
-	// Message
 	var webhook types.NtfyWebhook
 	webhook.Click = appURL
-	webhook.Title = fmt.Sprintf("%s (%s)", app.Name, appstore.Name)
+
+	if alerts.ServerName != "" {
+		webhook.Title = fmt.Sprintf("%s - %s (%s)", alerts.ServerName, app.Name, appstore.Name)
+	} else {
+		webhook.Title = fmt.Sprintf("%s (%s)", app.Name, appstore.Name)
+	}
 
 	if alerts.Insecure {
 		webhook.Scheme = "http"
@@ -139,16 +138,13 @@ func (alerts *Alerts) sendNtfy(app *types.App, appstore types.RuntipiAppstore) e
 		webhook.Scheme = "https"
 	}
 
-	// Query params
 	queries, err := query.Values(webhook)
 	if err != nil {
 		return err
 	}
 
-	// Final url
 	url := fmt.Sprintf("%s?%s", alerts.NotificationUrl, queries.Encode())
 
-	// Send
 	err = shoutrrr.Send(url, description)
 	if err != nil {
 		return err
@@ -158,26 +154,26 @@ func (alerts *Alerts) sendNtfy(app *types.App, appstore types.RuntipiAppstore) e
 }
 
 func (alerts *Alerts) sendGotify(app *types.App, appstore types.RuntipiAppstore) error {
-	// Vars
 	id, _ := utils.SplitURN(app.Urn)
 	appUrl := fmt.Sprintf("%s/apps/%s/%s", alerts.RuntipiUrl, appstore.Slug, id)
 	description := fmt.Sprintf("Your app %s from the %s appstore has an available update!\nUpdate to version %s (%d).\nVisit %s for more information.", app.Name, appstore.Name, app.DockerVersion, app.Version, appUrl)
 
-	// Message
 	var webhook types.GotifyWebhook
-	webhook.Title = fmt.Sprintf("%s (%s)", app.Name, appstore.Name)
 	webhook.DisableTls = alerts.Insecure
 
-	// Query params
+	if alerts.ServerName != "" {
+		webhook.Title = fmt.Sprintf("%s - %s (%s)", alerts.ServerName, app.Name, appstore.Name)
+	} else {
+		webhook.Title = fmt.Sprintf("%s (%s)", app.Name, appstore.Name)
+	}
+
 	queries, err := query.Values(webhook)
 	if err != nil {
 		return err
 	}
 
-	// Final url
 	url := fmt.Sprintf("%s?%s", alerts.NotificationUrl, queries.Encode())
 
-	// Send
 	err = shoutrrr.Send(url, description)
 	if err != nil {
 		return err

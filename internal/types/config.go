@@ -12,6 +12,7 @@ type AlertsConfig struct {
 	NotificationUrl string
 	RuntipiUrl      string
 	Insecure        bool
+	ServerName      string
 }
 
 // Server config
@@ -23,6 +24,7 @@ type ServerConfig struct {
 	Interval        int    `mapstructure:"interval"`
 	LogLevel        string `validate:"oneof=trace debug info warn error fatal panic" mapstructure:"log-level"`
 	Insecure        bool   `mapstructure:"insecure"`
+	ServerName      string `mapstructure:"server-name"`
 }
 
 // Check config

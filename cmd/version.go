@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Show the version of tipimate",
@@ -17,7 +16,6 @@ var versionCmd = &cobra.Command{
 	},
 }
 
-// Add command
 func init() {
 	rootCmd.AddCommand(versionCmd)
 }
