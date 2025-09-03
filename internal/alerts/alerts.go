@@ -71,7 +71,7 @@ func (alerts *Alerts) SendAlert(app *types.App, appstores []types.RuntipiAppstor
 func (alerts *Alerts) sendDiscord(app *types.App, appstore types.RuntipiAppstore) error {
 	id, _ := utils.SplitURN(app.Urn)
 	appURL := fmt.Sprintf("%s/apps/%s/%s", alerts.RuntipiUrl, appstore.Slug, id)
-	description := fmt.Sprintf("Your app %s from the %s appstore has an available update!\nUpdate to version `%s` (%d).", app.Name, appstore.Name, app.DockerVersion, app.Version)
+	description := fmt.Sprintf("Your app %s from the %s appstore has an available update!\nUpdate to version %s (%d).", app.Name, appstore.Name, app.DockerVersion, app.Version)
 	currentTime := time.Now().Format(time.RFC3339)
 
 	var message types.DiscordMessage
