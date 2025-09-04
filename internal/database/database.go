@@ -30,14 +30,6 @@ func InitDatabase(path string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	// Drop old table if it exists
-	if db.Migrator().HasTable("apps_old") {
-		err = db.Migrator().DropTable("apps_old")
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	// Rename old table if it exists
 	if db.Migrator().HasTable("schemas") {
 		err = db.Migrator().RenameTable("schemas", "apps_old")
