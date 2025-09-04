@@ -68,7 +68,10 @@ var serverCmd = &cobra.Command{
 
 		alerts := alerts.NewAlerts(alertsConfig)
 
-		for range time.Tick(time.Duration(config.Interval) * time.Minute) {
+		ticker := time.NewTicker(time.Duration(config.Interval) * time.Minute)
+		defer ticker.Stop()
+
+		for ; true; <-ticker.C {
 			log.Info().Msg("Checking for updates")
 
 			log.Info().Msg("Getting installed apps")
@@ -138,6 +141,11 @@ var serverCmd = &cobra.Command{
 						})
 					}
 				}
+			}
+
+			if len(appsWithUpdates) == 0 {
+				log.Info().Msg("No updates found")
+				continue
 			}
 
 			log.Info().Msg("Sending notifications")
